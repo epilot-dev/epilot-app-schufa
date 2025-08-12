@@ -1,4 +1,4 @@
-<h1 align="center"><a href="https://marketplace.epilot.cloud/en/apps"><img src="https://cdn.prod.website-files.com/66e6f7faa5f4d85bc99991f6/67e2bdec0c57abbe0b3a89a9_svg60480.svg" alt="schufa logo" width="100"><br>Schufa App for epilot</a></h1>
+<h1 align="center"><a href="https://marketplace.epilot.cloud/en/apps"><img src="./schufa.png" alt="schufa logo" width="100"><br>Schufa App for epilot</a></h1>
 
 <p align="center">
   <a href="https://marketplace.epilot.cloud/en/apps">epilot Marketplace</a> •
