@@ -1,4 +1,5 @@
 import { getClient } from "@epilot/entity-client";
+import { config } from '@epilot360/runtime-config'
 
 import { configureClient } from "./util";
 
@@ -6,7 +7,7 @@ export const getEntityClient = (token: string) => {
 	const client = getClient();
 
 	return configureClient(client, {
-		baseURL: "https://entity.sls.epilot.io",
+		baseURL: config.api.BASE_API_ENDPOINTS.ENTITY,
 		token,
 	});
 };

@@ -88,6 +88,9 @@ importers:
       '@epilot/entity-client':
         specifier: ^6.0.1
         version: 6.5.0(axios@1.11.0)(js-yaml@4.1.0)
+      '@epilot360/runtime-config':
+        specifier: ^1.4.8
+        version: 1.4.8
       '@tanstack/react-query':
         specifier: ^5.84.1
         version: 5.84.2(react@19.1.1)
@@ -546,6 +549,9 @@ packages:
     resolution: {integrity: sha512-Esir8NB71Z04pptyExZsn4s51e8mlZYacHRi7B57FzMLENXk4vektCtahDn7mQ0QH8VMr6n+lOi8sQZre7TBsg==}
     peerDependencies:
       axios: ^1.8.1
+
+  '@epilot360/runtime-config@1.4.8':
+    resolution: {integrity: sha512-CaJ39R8vup8HQhkV6wuK9BITQQHJruRohjPv8IWL8bu1VGHrTecOrPNL3YKrR6md3WTrIpu25KS7FwIGq4aFfQ==}
 
   '@esbuild/aix-ppc64@0.25.8':
     resolution: {integrity: sha512-urAvrUedIqEiFR3FYSLTWQgLu5tb+m0qZw0NBEasUeo6wuqatkMDaRT+1uABiGXEu5vqgPd7FGE1BhsAIy9QVA==}
@@ -4926,6 +4932,8 @@ snapshots:
       util: 0.12.5
     transitivePeerDependencies:
       - js-yaml
+
+  '@epilot360/runtime-config@1.4.8': {}
 
   '@esbuild/aix-ppc64@0.25.8':
     optional: true

@@ -12,6 +12,7 @@
   "dependencies": {
     "@epilot/app-bridge": "^0.0.1-alpha.8",
     "@epilot/entity-client": "^6.0.1",
+    "@epilot360/runtime-config": "^1.4.8",
     "@tanstack/react-query": "^5.84.1",
     "axios": "^1.10.0",
     "i18next": "^25.2.1",
