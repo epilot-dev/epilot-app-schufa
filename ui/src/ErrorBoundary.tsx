@@ -1,5 +1,4 @@
 import React from 'react'
-import { Box, Heading } from '@epilot/core-ui'
 import { useTranslation } from 'react-i18next';
 
 interface ErrorBoundaryProps {
@@ -43,9 +42,9 @@ export class ErrorBoundary extends React.Component<
 
 export const ErrorFallback = () => {
   const { t } = useTranslation();
-  return <Box>
-      <Heading as="h1">
+  return <div className="flex flex-col items-center justify-center h-full p-4 space-y-4">
+      <p className="text-2xl font-semibold text-gray-800">
         {t('error_boundary_heading', 'Something went wrong')}
-      </Heading>
-    </Box>
+      </p>
+    </div>
 }

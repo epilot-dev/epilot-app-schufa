@@ -1,14 +1,12 @@
-import { Box, Heading } from "@epilot/core-ui"
-
 export const NoResultAvailable = () => {
 
-    return <Box>
-        <Heading as="h1">
+    return <div className="flex flex-col items-center justify-center h-full p-4 space-y-4">
+        <h1 className="text-2xl font-semibold text-gray-800">
             No results available
-        </Heading>
+        </h1>
 
-        <Box>
+        <div className="text-gray-600">
             Please try again later or contact support if the issue persists.
-        </Box>
-    </Box>
+        </div>
+    </div>
 }

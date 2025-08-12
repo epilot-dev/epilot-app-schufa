@@ -4,6 +4,7 @@ import { useEntity } from "./hooks/useEntity";
 import { NoResultAvailable } from "./components/NoResultAvailable";
 import { ScoreCard } from "./components/ScoreCard";
 import { ScoreCardSkeleton } from "./components/ScoreCardSkeleton";
+import { ErrorCard } from "./components/ErrorCard";
 
 export function App () {
   
@@ -46,7 +47,7 @@ export function App () {
 
   return (
     <div>
-      {entityQuery.isError ? <p>Error: {entityQuery.error.message}</p> : null}
+      {entityQuery.isError ? <ErrorCard error={entityQuery.error} /> : null}
 
       {entityQuery.isSuccess && !scoreIsPresent ? <NoResultAvailable /> : null}
 
