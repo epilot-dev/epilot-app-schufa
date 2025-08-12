@@ -1,0 +1,111 @@
+openapi: 3.1.0
+info:
+  title: epilot Schufa App
+  version: 1.0.0
+  contact:
+    name: epilot GmbH
+    url: https://epilot.cloud
+  description: Simple API to check a schufa report
+servers:
+  - url: https://schufa-app.sls.epilot.io
+tags:
+  - name: schufa
+paths:
+  /api/v1/schufa/check:
+    post:
+      operationId: schufaCheck
+      summary: schufaCheck
+      description: Check a schufa report
+      tags:
+        - schufa
+      requestBody:
+         $ref: "#/components/requestBodies/SchufaCheckRequest"
+      responses:
+        "200":
+          description: Received successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchufaReport"
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal server error
+    
+security:
+  - accessToken: []
+
+components:
+  requestBodies:
+    SchufaCheckRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              timestamp: 
+                type: string
+                description: The timestamp of the action
+                example: "2023-10-01T12:00:00Z"
+              data:
+                type: object
+                description: The data to be forwarded to the zapier trigger
+                properties:
+                  org_id:
+                    type: string
+                    description: The id of the epilot organization
+                    example: "123"
+                  app_options:
+                    type: object
+                    additionalProperties: true
+                    required:
+                      - client_id
+                    properties:
+                      enable_test_mode:
+                        type: boolean
+                        description: Whether the schufa app is in test mode. The test mode uses a random score and description.
+                        default: false
+                      client_id:
+                        type: string
+                        description: The client id of the schufa app
+                        example: "client_123"
+                  entity:
+                    type:: object
+                    additionalProperties: true
+                required:
+                  - entity
+                  - app_options
+                  - org_id
+            required:
+              - data
+  schemas:
+    SchufaReport:
+      type: object
+      additionalProperties: true
+      properties:
+        skip_reason:
+          type: string
+          description: If this is present the action was skipped and the reason is given
+          example: "User consent not given"
+        error_output:
+          type: object
+          description: If this is present the action failed and the error message is given
+          properties:
+            error_reason:
+              type: string
+              description: The reason for the error
+              example: "Invalid client id"
+        
+  securitySchemes:
+    accessToken:
+      type: http
+      scheme: bearer
+      description: Authorization header with epilot access token
+      bearerFormat: JWT

@@ -1,0 +1,10 @@
+{
+	"extends": "@tsconfig/node22/tsconfig.json",
+	"exclude": ["node_modules"],
+	"compilerOptions": {
+		"module": "esnext",
+		"types": ["vitest/globals"],
+		"moduleResolution": "node",
+		"resolveJsonModule": true
+	}
+}
