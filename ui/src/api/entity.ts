@@ -1,5 +1,5 @@
 import { getClient } from "@epilot/entity-client";
-import { config } from '@epilot360/runtime-config'
+import { config } from "@epilot360/runtime-config";
 
 import { configureClient } from "./util";
 

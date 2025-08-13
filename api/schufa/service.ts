@@ -153,7 +153,7 @@ export async function getCreditScoreForUser(params: {
 		}
 
 		throw new VisibleError(
-			"Failed to fetch SCHUFA data",
+			"Die Schufa Daten konnten nicht abgerufen werden. Bitte kontaktiere den Support.",
 			"SCHUFA_DATA_ERROR",
 			500,
 			{ error },
@@ -175,21 +175,38 @@ export async function updateContactWithSchufaScore(params: {
 		org_id: params.contact.org_id,
 	});
 
-	await client.patchEntity(
-		{ id: params.contact._id, slug: "contact" },
-		{
-			score_value: params.schufa_score.details?.value,
-			score_range: params.schufa_score.details?.range,
-			schufa_text: params.schufa_score.details?.text,
-			schufa_risk_rate: params.schufa_score.details?.riskRate,
-			schufa_info_text: params.schufa_score.details?.infoText?.map((text) => ({
-				_id: nanoid(),
-				_tags: [],
-				value: text,
-			})),
-			score_timestamp: new Date().toISOString(),
-		},
-	);
+	try {
+		await client.patchEntity(
+			{ id: params.contact._id, slug: "contact" },
+			{
+				score_value: params.schufa_score.details?.value,
+				score_range: params.schufa_score.details?.range,
+				schufa_text: params.schufa_score.details?.text,
+				schufa_risk_rate: params.schufa_score.details?.riskRate,
+				schufa_info_text: params.schufa_score.details?.infoText?.map(
+					(text) => ({
+						_id: nanoid(),
+						_tags: [],
+						value: text,
+					}),
+				),
+				score_timestamp: new Date().toISOString(),
+			},
+		);
+	} catch (error) {
+		if (isAxiosError(error)) {
+			throw new VisibleError(
+				"Der Kontakt konnte nicht aktualisiert werden. Bitte kontaktiere den Support.",
+				"ENTITY_UPDATE_ERROR",
+				error.status || 500,
+				{
+					error,
+				},
+			);
+		}
+
+		throw error;
+	}
 }
 
 export async function startAsyncReportProcessing(params: {

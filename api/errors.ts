@@ -4,6 +4,7 @@ type Code =
 	| "SCHUFA_AUTH_ERROR"
 	| "NO_TEST_USER"
 	| "DATA_MAPPING_ERROR"
+	| "ENTITY_UPDATE_ERROR"
 	| "SCHUFA_DATA_ERROR";
 
 export class VisibleError extends Error {

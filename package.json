@@ -7,7 +7,7 @@
 		"build": "turbo build",
 		"console": "sst console",
 		"deploy:prod": "sst deploy --stage production",
-		"test": "vitest",
+		"test": "turbo test",
 		"dev": "sst dev",
 		"sst": "sst",
 		"remove": "sst remove",

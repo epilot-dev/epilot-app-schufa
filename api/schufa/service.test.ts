@@ -1,4 +1,27 @@
-import { findContactEntity } from "./service";
+import { AxiosError } from "axios";
+import { getEntityClient } from "../entity/client";
+import { findContactEntity, updateContactWithSchufaScore } from "./service";
+
+const mockStage = vi.fn(() => "prod");
+
+vi.mock("sst", () => ({
+	Resource: {
+		App: {
+			get stage() {
+				return mockStage();
+			},
+		},
+	},
+}));
+
+vi.mock("../entity/client.ts");
+
+const mockGetEntityClient = vi.mocked(getEntityClient);
+
+beforeEach(() => {
+	vi.clearAllMocks();
+	vi.resetAllMocks();
+});
 
 describe("SchufaService", () => {
 	describe("buildPersonalData", () => {
@@ -821,6 +844,7 @@ describe("SchufaService", () => {
 			// then
 			expect(contact_entity).toBeDefined();
 		});
+
 		it("should return undefined for missing contacts from an opportunity", () => {
 			// given
 			const opportunity = {
@@ -865,6 +889,70 @@ describe("SchufaService", () => {
 
 			// then
 			expect(contact_entity).toBeUndefined();
+		});
+	});
+
+	describe("updateContactWithSchufaScore", () => {
+		it("should throw a VisibileError when contact was not updated", async () => {
+			// given
+			const contact = {
+				_id: "cc523084-8284-417d-b322-efda7109a643",
+				_org: "739224",
+				_schema: "contact",
+				_updated_at: "2025-07-10T13:33:53.913Z",
+				email: [],
+				birthdate: "1991-12-27T00:00:00.000Z",
+				last_name: "Munoz",
+				first_name: "David",
+				address: [],
+				phone: [],
+				_created_at: "2022-11-15T09:01:00.719Z",
+				_title: "David Munoz",
+
+				salutation: "Mr.",
+				_purpose: [],
+				_owners: [
+					{
+						org_id: "739224",
+					},
+				],
+				_acl: {
+					view: ["org_739224", "org_911215"],
+					edit: ["org_739224", "org_911215"],
+					delete: ["org_739224", "org_911215"],
+				},
+			};
+
+			const mockClient = {
+				patchEntity: vi.fn().mockRejectedValue(
+					new AxiosError(
+						"Forbidden",
+						"403",
+						undefined,
+						{},
+						{
+							status: 403,
+							statusText: "Forbidden",
+							data: { message: "Access denied" },
+							headers: {},
+							// @ts-ignore
+							config: { headers: {} },
+						},
+					),
+				),
+				// biome-ignore lint/suspicious/noExplicitAny: mock
+			} as any;
+
+			mockGetEntityClient.mockReturnValue(mockClient);
+
+			// when
+			await expect(
+				updateContactWithSchufaScore({
+					access_token: "",
+					contact,
+					schufa_score: {},
+				}),
+			).rejects.toThrow("Der Kontakt konnte nicht aktualisiert werden");
 		});
 	});
 });

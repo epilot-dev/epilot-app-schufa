@@ -530,6 +530,8 @@ describe("mapToPersonalDataOrThrow", () => {
 			expect(result.error?.issues).toEqual([
 				{
 					code: "too_big",
+					exact: true,
+					inclusive: true,
 					maximum: 5,
 					message: "Die PLZ muss genau 5 Zeichen lang sein",
 					origin: "string",
@@ -585,6 +587,8 @@ describe("mapToPersonalDataOrThrow", () => {
 				{
 					code: "too_small",
 					minimum: 5,
+					exact: true,
+					inclusive: true,
 					message: "Die PLZ muss genau 5 Zeichen lang sein",
 					origin: "string",
 					path: ["addresses", "currentAddress", "postalCode"],
