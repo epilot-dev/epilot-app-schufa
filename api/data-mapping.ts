@@ -65,9 +65,13 @@ const PersonData = z.object({
 		})
 		.optional(),
 	title: z
-		.string()
-		.max(30)
-		.regex(SCHUFA_ALLOWED_CHARS, { message: "Invalid characters in title" })
+		.union([
+			z.literal(""),
+			z
+				.string()
+				.max(30)
+				.regex(SCHUFA_ALLOWED_CHARS, { message: "Invalid characters in title" }),
+		])
 		.optional(),
 	placeOfBirth: z
 		.string()
