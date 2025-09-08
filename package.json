@@ -6,7 +6,7 @@
 	"scripts": {
 		"build": "turbo build",
 		"console": "sst console",
-		"deploy:prod": "sst deploy --stage production",
+		"deploy:prod": "sst deploy --stage prod",
 		"test": "turbo test",
 		"dev": "sst dev",
 		"sst": "sst",
