@@ -18,6 +18,9 @@ importers:
       '@tsconfig/node22':
         specifier: ^22.0.1
         version: 22.0.2
+      openapicmd:
+        specifier: ^2.6.2
+        version: 2.7.0(@types/node@24.2.1)(openapi-types@12.1.3)
       turbo:
         specifier: ^2.5.5
         version: 2.5.5

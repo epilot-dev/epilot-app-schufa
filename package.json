@@ -27,6 +27,7 @@
 		"@biomejs/biome": "^1.9.4",
 		"@tsconfig/node22": "^22.0.1",
 		"turbo": "^2.5.5",
+		"openapicmd": "^2.6.2",
 		"typescript": "^5.8.3"
 	},
 	"packageManager": "pnpm@10.0.0"
