@@ -142,6 +142,9 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 				{
 					error_output: {
 						error_reason: error.message,
+						error_info: {
+							details: [{ explanation: error.message }],
+						},
 					},
 				},
 				{ statusCode: error.statusCode },
