@@ -1,76 +1,92 @@
-import { verify } from "node:crypto";
-import type { Context } from "openapi-backend";
-import { getEnvironment } from "./stage";
+import { IncomingMessage } from 'http';
+import { verify } from 'node:crypto';
+import { Context } from 'openapi-backend';
+import { logger } from './logger';
 
-type PublicKey = {
-	algorithm: string;
-	issuer: string;
-	public_key: string;
+export type PublicKey = {
+  algorithm: string;
+  issuer: string;
+  public_key: string;
 };
 
 let cachedPublicKey: string | null = null;
 
+export type HttpRequest = IncomingMessage & { body: string | Buffer };
+
 export async function verifyEpilotSignature(c: Context) {
-	try {
-		const webhookId = c.request.headers["webhook-id"];
-		const webhookTimestamp = c.request.headers["webhook-timestamp"];
-		const webhookSignature = c.request.headers["webhook-signature"];
-		const payload = c.request.body;
+  try {
+    const webhookId = c.request.headers["webhook-id"] as string;
+	const webhookTimestamp = c.request.headers["webhook-timestamp"] as string;
+	const webhookSignature = c.request.headers["webhook-signature"] as string;
 
-		// prevent replay attack
-		const currentTime = Math.floor(Date.now() / 1000);
-		const webhookTime = Number.parseInt(webhookTimestamp);
-		const tolerance = 300; // 5 minutes
+	const payload = JSON.stringify(c.request.requestBody?.data);
 
-		if (Math.abs(currentTime - webhookTime) > tolerance) {
-			return false;
-		}
+    if (!webhookId || !webhookTimestamp || !webhookSignature) {
+      logger.warn('[verifyEpilotSignature] Missing required headers');
+      return false;
+    }
 
-		const environment = getEnvironment();
-		// Fetch the public key from epilot's well-known endpoint, but cache it
-		if (!cachedPublicKey) {
-			const stage = !environment
-				? "dev"
-				: environment.startsWith("prod")
-					? ""
-					: environment;
-			const url = ["https://cdn.app", stage, "sls", "epilot.io"]
-				.filter(Boolean)
-				.join(".");
-			const response = await fetch(`${url}/v1/.well-known/public-key`);
-			if (!response.ok) {
-				return false;
-			}
-			const json = (await response.json()) as PublicKey;
-			if (!json.public_key) {
-				return false;
-			}
-			cachedPublicKey = json.public_key;
-		}
-		const publicKeyPem = cachedPublicKey;
+    if (!isFreshTimestamp(webhookTimestamp)) {
+      logger.warn('[verifyEpilotSignature] Timestamp too old');
+      return false;
+    }
 
-		// Parse webhook-signature header to extract v1a signature
-		const signatures: Record<string, string> = {};
+    const publicKeyPem = await getEpilotPublicKey();
+    if (!publicKeyPem) {
+      logger.warn('[verifyEpilotSignature] Failed to fetch public key');
+      return false;
+    }
 
-		for (const part of webhookSignature.split(" ")) {
-			const [version, signature] = part.split(",", 2);
-			if (version && signature) {
-				signatures[version] = signature;
-			}
-		}
+    const signatures = parseSignatures(webhookSignature);
+    if (!signatures.v1a) {
+      logger.warn('[verifyEpilotSignature] No v1a signature found');
+      return false;
+    }
 
-		if (!signatures.v1a) {
-			return false;
-		}
+    // Reconstruct the signed content: msg_id.timestamp.payload
+    const signedContent = `${webhookId}.${webhookTimestamp}.${payload}`;
+    const messageBuffer = Buffer.from(signedContent, 'utf8');
+    const signatureBuffer = Buffer.from(signatures.v1a, 'base64');
 
-		// Reconstruct the signed content: msg_id.timestamp.payload
-		const signedContent = `${webhookId}.${webhookTimestamp}.${payload}`;
-		const messageBuffer = Buffer.from(signedContent, "utf8");
-		const signatureBuffer = Buffer.from(signatures.v1a, "base64");
+  
+    // Verify using ed25519 - pass the public key directly as a string
+    const result = verify(null, messageBuffer, publicKeyPem, signatureBuffer);
 
-		// Verify using ed25519
-		return verify(null, messageBuffer, publicKeyPem, signatureBuffer);
-	} catch (error) {
-		return false;
-	}
+    return result;
+  } catch (error) {
+    logger.error('[verifyEpilotSignature] Error during verification', { error });
+    return false;
+  }
+}
+
+function isFreshTimestamp(webhookTimestamp: string) {
+  const currentTime = Math.floor(Date.now() / 1000);
+  const webhookTime = Number.parseInt(webhookTimestamp);
+  const tolerance = 300; // 5 minutes
+
+  return Math.abs(currentTime - webhookTime) <= tolerance;
+}
+
+export async function getEpilotPublicKey(): Promise<string | null> {
+  if (!cachedPublicKey) {
+    const response = await fetch('https://cdn.app.sls.epilot.io/v1/.well-known/public-key');
+    if (!response.ok) return null;
+    const json = (await response.json()) as PublicKey;
+    if (!json.public_key) return null;
+    cachedPublicKey = json.public_key;
+  }
+
+  return cachedPublicKey;
+}
+
+function parseSignatures(webhookSignature: string): Record<string, string> {
+  const signatures: Record<string, string> = {};
+  for (const part of webhookSignature.split(' ')) {
+    const [version, signature] = part.split(',', 2);
+    if (version && signature) {
+      signatures[version] = signature;
+    }
+  }
+
+  return signatures;
 }
