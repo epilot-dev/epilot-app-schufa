@@ -14,7 +14,7 @@ import {
 } from "./service";
 
 export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
-	const isCorrectSignature = verifyEpilotSignature(c);
+	const isCorrectSignature = await verifyEpilotSignature(c);
 	if (!isCorrectSignature) {
 		return replyJSON(
 			{
