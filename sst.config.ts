@@ -75,6 +75,10 @@ export default $config({
 			handler: "api/index.handler",
 			runtime: "nodejs22.x",
 			architecture: "arm64",
+			environment: {
+				SLACK_WEBHOOK_URL: process.env.SLACK_WEBHOOK_URL as string,
+				APPS_REQUESTS_SLACK_WEBHOOK_CHANNEL: process.env.APPS_REQUESTS_SLACK_WEBHOOK_CHANNEL as string,
+			},
 			permissions: [
 				{
 					actions: ["states:StartExecution"],
