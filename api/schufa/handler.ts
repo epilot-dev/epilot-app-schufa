@@ -132,12 +132,12 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 			is_test_request: c.request.requestBody.data.app_options.enable_test_mode,
 		});
 
-		logger.error("[handler] Unexpected error while processing SCHUFA check", {
-			error,
-			contact: sanitizeContact(c.request.requestBody.data.entity),
-		});
-
 		if (error instanceof VisibleError) {
+			logger.warn("[handler] VisibleError while processing SCHUFA check", {
+				error,
+				contact: sanitizeContact(c.request.requestBody.data.entity),
+			});
+
 			return replyJSON(
 				{
 					error_output: {
@@ -150,6 +150,11 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 				{ statusCode: error.statusCode },
 			);
 		}
+
+		logger.error("[handler] Unexpected error while processing SCHUFA check", {
+			error,
+			contact: sanitizeContact(c.request.requestBody.data.entity),
+		});
 
 		return replyJSON(
 			{
