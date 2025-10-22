@@ -102,7 +102,7 @@ export async function getCreditScoreForUser(params: {
 	const mapping_result = mapToPersonalDataOrThrow(params.contact);
 
 	if (mapping_result.error) {
-		logger.error("Failed to map personal data for SCHUFA", {
+		logger.warn("Failed to map personal data for SCHUFA", {
 			mapping_result,
 		});
 
