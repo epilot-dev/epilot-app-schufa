@@ -22,7 +22,12 @@ const AddressSchema = z.object({
 		.transform((val) => val.trim().slice(0, 46)),
 	postalCode: z.coerce
 		.string()
-		.length(5, { message: "Die PLZ muss genau 5 Zeichen lang sein" }),
+		.transform((val) => val.trim())
+		.pipe(
+			z
+				.string()
+				.length(5, { message: "Die PLZ muss genau 5 Zeichen lang sein" }),
+		),
 	city: z
 		.string()
 		.min(1)

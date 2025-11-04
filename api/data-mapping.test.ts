@@ -255,6 +255,58 @@ describe("mapToPersonalDataOrThrow", () => {
 			expect(data?.title).toBe("Dr.");
 			expect(data?.placeOfBirth).toBe("Munich");
 		});
+
+		it("should handle postal codes white spaces", () => {
+			const entity = {
+				salutation: "Mr.",
+				first_name: "Igor",
+				last_name: "Stravinsky",
+				birthdate: "15.04.1982",
+				address: [
+					{
+						street: "test",
+						street_number: "54",
+						postal_code: "  12345      ",
+						city: "Reggg",
+						country: "DE",
+						_tags: ["Kundenadresse"],
+						_id: "sdsfdsfsdf",
+						coordinates: "43.472960, 17.472960",
+					},
+				],
+				email: [
+					{
+						email: "igor@web.de",
+						_id: "sdsdsd-JzX3Qa",
+					},
+				],
+				phone: [
+					{
+						_tags: ["Telefon"],
+						phone: "243242342",
+						_id: "2324234",
+					},
+				],
+				_schema: "contact",
+				_id: "2342342-5223-4a2e-a26c-aca4a84260fe",
+				_org: "739224",
+				_owners: [
+					{
+						org_id: "739224",
+					},
+				],
+				_created_at: "2025-09-04T08:59:48.845Z",
+				_updated_at: "2025-11-03T19:46:44.219Z",
+				_title: "Igor Stravinsky",
+				_acl: {
+					view: ["org_739224"],
+					edit: ["org_739224"],
+					delete: ["org_739224"],
+				},
+			};
+			const { data } = mapToPersonalDataOrThrow(entity);
+			expect(data?.addresses.currentAddress.postalCode).toBe("12345");
+		});
 	});
 
 	describe("acceptance testing", () => {
