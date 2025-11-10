@@ -134,7 +134,7 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 
 		if (error instanceof VisibleError) {
 			logger.warn("[handler] VisibleError while processing SCHUFA check", {
-				error,
+				visible_error: error,
 				contact: sanitizeContact(c.request.requestBody.data.entity),
 			});
 
