@@ -136,12 +136,6 @@ export async function getCreditScoreForUser(params: {
 
 		return { reportId: result.data.reportId };
 	} catch (error) {
-		logger.error("Failed to fetch SCHUFA data", {
-			error: isAxiosError(error) ? error.toJSON() : error,
-			error_message: isAxiosError(error) ? error.response?.data : undefined,
-			contact: sanitizeContact(params.contact),
-		});
-
 		if (isAxiosError(error)) {
 			const response = SchufaErrorSchema.parse(error.response?.data);
 			throw new VisibleError(
