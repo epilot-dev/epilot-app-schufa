@@ -4,6 +4,7 @@ import type { OperationHandler } from "../openapi";
 import { verifyEpilotSignature } from "../utils/auth";
 import { replyJSON } from "../utils/lambda";
 import { logger, sanitizeContact } from "../utils/logger";
+import { translateErrorMessage } from "../utils/translation";
 import {
 	findContactEntity,
 	getCreditScoreForUser,
@@ -141,10 +142,7 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 			return replyJSON(
 				{
 					error_output: {
-						error_reason: error.message,
-						error_info: {
-							details: [{ explanation: error.message }],
-						},
+						error_reason: translateErrorMessage({ message: error.message }),
 					},
 				},
 				{ statusCode: error.statusCode },
@@ -159,7 +157,9 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 		return replyJSON(
 			{
 				error_output: {
-					error_reason: "Unexpected error while processing SCHUFA check.",
+					error_reason: translateErrorMessage({
+						message: "Unexpected error while processing SCHUFA check",
+					}),
 				},
 			},
 			{ statusCode: 500 },
