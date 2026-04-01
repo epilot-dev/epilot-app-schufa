@@ -70,6 +70,10 @@ export async function handler(input: Input) {
 
 		logger.error("Failed to check SCHUFA processing status", {
 			error: isAxiosError(error) ? error.toJSON() : error,
+			...(isAxiosError(error) && {
+				responseStatus: error.response?.status,
+				responseData: error.response?.data,
+			}),
 		});
 	}
 }
