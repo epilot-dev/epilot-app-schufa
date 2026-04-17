@@ -14,7 +14,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@aws-lambda-powertools/logger": "^2.24.1",
-		"@epilot/app-sdk": "^0.0.1-alpha.1",
+		"@epilot/app-sdk": "^0.0.4",
 		"@epilot/entity-client": "^6.0.1",
 		"axios": "^1.10.0",
 		"http-errors": "^2.0.0",

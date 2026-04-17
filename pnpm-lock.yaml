@@ -27,9 +27,6 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.2.1)(jiti@2.5.1)(lightningcss@1.30.1)(msw@2.10.4(@types/node@24.2.1)(typescript@5.8.3))
 
   api:
     dependencies:
@@ -37,8 +34,8 @@ importers:
         specifier: ^2.24.1
         version: 2.24.1
       '@epilot/app-sdk':
-        specifier: ^0.0.1-alpha.1
-        version: 0.0.1-alpha.2(@types/node@24.2.1)(typescript@5.8.3)
+        specifier: ^0.0.4
+        version: 0.0.4(@types/node@24.2.1)(typescript@5.8.3)
       '@epilot/entity-client':
         specifier: ^6.0.1
         version: 6.5.0(axios@1.11.0)(js-yaml@4.1.0)
@@ -547,8 +544,8 @@ packages:
   '@epilot/app-bridge@0.0.1-alpha.8':
     resolution: {integrity: sha512-XZqHYmAB18P4OkqfRuKhFnSYGwCVZJfcpfnHHXIPgTPvGdcWSQiUDqSjsgCEYcXsLiBCqyVUcuQCZlEyJZhx6A==}
 
-  '@epilot/app-sdk@0.0.1-alpha.2':
-    resolution: {integrity: sha512-5sN5qSawOCeN0vh4JiQxk4FBcSHFcWy8t80PA7eKFeUFMvCfWGCnWnAHOgSn1NerW6y6KT9k27MECI/f7+hiFg==}
+  '@epilot/app-sdk@0.0.4':
+    resolution: {integrity: sha512-PT3hY41r7Yp2JvNlofTfbSLYHrhMzf2yjgoQbesIxVkWIYzppWeoh4iCl/Jppqp1a4MdDrLWtTuWU2Jby6eaPA==}
     engines: {node: '>= 16'}
 
   '@epilot/entity-client@6.5.0':
@@ -4919,7 +4916,7 @@ snapshots:
     dependencies:
       common-tags: 1.8.2
 
-  '@epilot/app-sdk@0.0.1-alpha.2(@types/node@24.2.1)(typescript@5.8.3)':
+  '@epilot/app-sdk@0.0.4(@types/node@24.2.1)(typescript@5.8.3)':
     dependencies:
       msw: 2.10.4(@types/node@24.2.1)(typescript@5.8.3)
       tslib: 2.8.1

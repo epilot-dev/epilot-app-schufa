@@ -1,7 +1,7 @@
+import { verifyEpilotSignature } from "@epilot/app-sdk";
 import { isZodError } from "../data-mapping";
 import { VisibleError } from "../errors";
 import type { OperationHandler } from "../openapi";
-import { verifyEpilotSignature } from "../utils/auth";
 import { replyJSON } from "../utils/lambda";
 import { logger, sanitizeContact } from "../utils/logger";
 import { translateErrorMessage } from "../utils/translation";
