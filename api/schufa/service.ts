@@ -137,12 +137,21 @@ export async function getCreditScoreForUser(params: {
 		return { reportId: result.data.reportId };
 	} catch (error) {
 		if (isAxiosError(error)) {
-			const response = SchufaErrorSchema.parse(error.response?.data);
+			const parsed = SchufaErrorSchema.safeParse(error.response?.data);
+			if (parsed.success) {
+				throw new VisibleError(
+					parsed.data.detail,
+					"SCHUFA_DATA_ERROR",
+					parsed.data.status,
+					{ error },
+				);
+			}
+
 			throw new VisibleError(
-				response.detail,
+				"Die Schufa Daten konnten nicht abgerufen werden. Bitte kontaktiere den Support.",
 				"SCHUFA_DATA_ERROR",
-				response.status,
-				{ error },
+				error.response?.status ?? 502,
+				{ error, response_data: error.response?.data },
 			);
 		}
 
