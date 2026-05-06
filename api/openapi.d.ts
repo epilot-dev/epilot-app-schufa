@@ -29,11 +29,17 @@ declare namespace Components {
                      */
                     enable_test_mode?: boolean;
                     /**
-                     * The client id of the schufa app
+                     * The default client id of the schufa app. Used when client_id_key is not set or does not resolve.
                      * example:
                      * client_123
                      */
                     client_id: string;
+                    /**
+                     * Name of the app_options field whose value should be used as the client id for this automation. When unset, client_id is used.
+                     * example:
+                     * client_id_score
+                     */
+                    client_id_key?: string;
                 };
                 entity: {
                     [name: string]: any;

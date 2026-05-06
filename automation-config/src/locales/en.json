@@ -1,0 +1,9 @@
+{
+  "title": "Schufa client",
+  "description": "Choose which client_id from your app options to use when this automation runs. If left empty, the default client_id is used.",
+  "label": "Client ID option",
+  "placeholder": "Use default client_id",
+  "no_options": "No client_id options found in your Schufa app configuration. Add option fields whose names start with \"client_id\" to your app installation to make them selectable here.",
+  "default_option": "Default (client_id)",
+  "error_boundary_heading": "Something went wrong"
+}

@@ -29,6 +29,20 @@ export function isUserConsentPresent(entity: SchufaPayload) {
 	return true;
 }
 
+type AppOptions =
+	Components.RequestBodies.SchufaCheckRequest["data"]["app_options"];
+
+export function resolveClientId(app_options: AppOptions): string {
+	const key = app_options.client_id_key;
+	if (key) {
+		const value = app_options[key];
+		if (typeof value === "string" && value.length > 0) {
+			return value;
+		}
+	}
+	return app_options.client_id;
+}
+
 // entity is already hydrated from the automation worker
 export function findContactEntity(entity: SchufaPayload) {
 	logger.debug("looking for contact in entity payload", {
@@ -96,7 +110,7 @@ export async function getCreditScoreForUser(params: {
 	}
 
 	const { access_token } = await useSchufaAuthTokenOrThrow(
-		params.app_options.client_id,
+		resolveClientId(params.app_options),
 	);
 
 	const mapping_result = mapToPersonalDataOrThrow(params.contact);

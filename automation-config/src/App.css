@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@import "@epilot/volt-ui/style.css";
+@import "@epilot/volt-ui/preflight.css";
+
+@theme {
+  --default-font-family: var(--volt-font-geist);
+}
+
+html, body {
+  background: white;
+}

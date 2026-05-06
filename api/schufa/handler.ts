@@ -10,6 +10,7 @@ import {
 	getCreditScoreForUser,
 	isUserConsentPresent,
 	notifySlackOnSchufaRequest,
+	resolveClientId,
 	startAsyncReportProcessing,
 	updateContactWithSchufaScore,
 } from "./service";
@@ -95,7 +96,7 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 			await startAsyncReportProcessing({
 				epilotToken: access_token,
 				contact,
-				clientId: c.request.requestBody.data.app_options.client_id,
+				clientId: resolveClientId(c.request.requestBody.data.app_options),
 				reportId: schufa_score.reportId,
 			});
 

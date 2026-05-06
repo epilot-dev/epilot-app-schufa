@@ -74,8 +74,12 @@ components:
                         default: false
                       client_id:
                         type: string
-                        description: The client id of the schufa app
+                        description: The default client id of the schufa app. Used when client_id_key is not set or does not resolve.
                         example: "client_123"
+                      client_id_key:
+                        type: string
+                        description: Name of the app_options field whose value should be used as the client id for this automation. When unset, client_id is used.
+                        example: "client_id_score"
                   entity:
                     type:: object
                     additionalProperties: true

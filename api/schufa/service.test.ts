@@ -1,6 +1,10 @@
 import { AxiosError } from "axios";
 import { getEntityClient } from "../entity/client";
-import { findContactEntity, updateContactWithSchufaScore } from "./service";
+import {
+	findContactEntity,
+	resolveClientId,
+	updateContactWithSchufaScore,
+} from "./service";
 
 const mockStage = vi.fn(() => "prod");
 
@@ -953,6 +957,51 @@ describe("SchufaService", () => {
 					schufa_score: {},
 				}),
 			).rejects.toThrow("Der Kontakt konnte nicht aktualisiert werden");
+		});
+	});
+
+	describe("resolveClientId", () => {
+		it("returns the value at client_id_key when set and present", () => {
+			expect(
+				resolveClientId({
+					client_id: "default",
+					client_id_key: "client_id_score",
+					client_id_score: "score-id",
+				}),
+			).toBe("score-id");
+		});
+
+		it("falls back to client_id when client_id_key is unset", () => {
+			expect(resolveClientId({ client_id: "default" })).toBe("default");
+		});
+
+		it("falls back to client_id when client_id_key points to a missing field", () => {
+			expect(
+				resolveClientId({
+					client_id: "default",
+					client_id_key: "client_id_missing",
+				}),
+			).toBe("default");
+		});
+
+		it("falls back to client_id when the resolved value is empty", () => {
+			expect(
+				resolveClientId({
+					client_id: "default",
+					client_id_key: "client_id_empty",
+					client_id_empty: "",
+				}),
+			).toBe("default");
+		});
+
+		it("falls back to client_id when the resolved value is not a string", () => {
+			expect(
+				resolveClientId({
+					client_id: "default",
+					client_id_key: "client_id_bool",
+					client_id_bool: true,
+				}),
+			).toBe("default");
 		});
 	});
 });

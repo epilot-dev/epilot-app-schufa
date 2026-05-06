@@ -1,0 +1,9 @@
+{
+  "title": "Schufa Client",
+  "description": "Wähle aus, welche client_id aus deiner App-Konfiguration für diese Automation verwendet werden soll. Wenn nichts ausgewählt ist, wird die Standard-client_id verwendet.",
+  "label": "Client-ID-Option",
+  "placeholder": "Standard-client_id verwenden",
+  "no_options": "Es wurden keine client_id-Optionen in deiner Schufa-App-Konfiguration gefunden. Füge Optionsfelder, deren Name mit \"client_id\" beginnt, zu deiner App-Installation hinzu, damit sie hier auswählbar sind.",
+  "default_option": "Standard (client_id)",
+  "error_boundary_heading": "Etwas ist schiefgelaufen"
+}
