@@ -4,18 +4,26 @@
  */
 export interface SchufaActionConfig {
 	/**
-	 * Name of the app_options field whose value should be used as the Schufa
-	 * client_id for this automation. When unset, the default `client_id` is used.
+	 * Stable id of the `client_ids` entry to use for this automation. When
+	 * unset and the install has a single entry, that entry is used.
 	 */
 	client_id_key?: string;
 }
 
 export const DEFAULT_CONFIG: SchufaActionConfig = {};
 
-export const CLIENT_ID_KEY_PREFIX = "client_id";
+/**
+ * Key of the option declared in the schufa app manifest that holds the
+ * org-configured Schufa credentials. Must match the manifest exactly.
+ */
+export const CLIENT_IDS_OPTION_KEY = "client_ids";
 
-export interface ClientIdOption {
-	key: string;
-	label?: string;
-	description?: string;
+/**
+ * One credential the org configured at install time.
+ */
+export interface ClientIdEntry {
+	/** Stable, server-assigned identifier — the action saves this as `client_id_key`. */
+	id: string;
+	/** Human-readable label, shown in the dropdown. */
+	name?: string;
 }

@@ -961,47 +961,75 @@ describe("SchufaService", () => {
 	});
 
 	describe("resolveClientId", () => {
-		it("returns the value at client_id_key when set and present", () => {
+		it("returns the entry whose id matches client_id_key", () => {
 			expect(
 				resolveClientId({
-					client_id: "default",
-					client_id_key: "client_id_score",
-					client_id_score: "score-id",
+					client_id_key: "id-2",
+					client_ids: [
+						{ id: "id-1", name: "Werk35", client_id: "abc" },
+						{ id: "id-2", name: "Werk36", client_id: "def" },
+					],
 				}),
-			).toBe("score-id");
+			).toBe("def");
 		});
 
-		it("falls back to client_id when client_id_key is unset", () => {
-			expect(resolveClientId({ client_id: "default" })).toBe("default");
-		});
-
-		it("falls back to client_id when client_id_key points to a missing field", () => {
+		it("uses the only entry when no key is set and one entry is configured", () => {
 			expect(
 				resolveClientId({
-					client_id: "default",
-					client_id_key: "client_id_missing",
+					client_ids: [
+						{ id: "id-1", name: "Default", client_id: "xyz" },
+					],
 				}),
-			).toBe("default");
+			).toBe("xyz");
 		});
 
-		it("falls back to client_id when the resolved value is empty", () => {
+		it("falls back to client_id_key match before legacy client_id", () => {
 			expect(
 				resolveClientId({
-					client_id: "default",
-					client_id_key: "client_id_empty",
-					client_id_empty: "",
+					client_id: "legacy",
+					client_id_key: "id-1",
+					client_ids: [{ id: "id-1", client_id: "modern" }],
 				}),
-			).toBe("default");
+			).toBe("modern");
 		});
 
-		it("falls back to client_id when the resolved value is not a string", () => {
+		it("falls back to legacy client_id when client_ids is empty", () => {
+			expect(resolveClientId({ client_id: "legacy" })).toBe("legacy");
+		});
+
+		it("falls back to the sole entry when key does not match (single-entry orgs stay forgiving)", () => {
 			expect(
 				resolveClientId({
-					client_id: "default",
-					client_id_key: "client_id_bool",
-					client_id_bool: true,
+					client_id: "legacy",
+					client_id_key: "nonexistent",
+					client_ids: [{ id: "id-1", client_id: "modern" }],
 				}),
-			).toBe("default");
+			).toBe("modern");
+		});
+
+		it("falls back to legacy when the key does not match and there are multiple entries", () => {
+			expect(
+				resolveClientId({
+					client_id: "legacy",
+					client_id_key: "nope",
+					client_ids: [
+						{ id: "id-1", client_id: "a" },
+						{ id: "id-2", client_id: "b" },
+					],
+				}),
+			).toBe("legacy");
+		});
+
+		it("throws when neither modern nor legacy credentials resolve", () => {
+			expect(() =>
+				resolveClientId({
+					client_id_key: "nope",
+					client_ids: [
+						{ id: "id-1", client_id: "a" },
+						{ id: "id-2", client_id: "b" },
+					],
+				}),
+			).toThrowError(/Client-ID/);
 		});
 	});
 });

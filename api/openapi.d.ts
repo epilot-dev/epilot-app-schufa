@@ -29,15 +29,46 @@ declare namespace Components {
                      */
                     enable_test_mode?: boolean;
                     /**
-                     * The default client id of the schufa app. Used when client_id_key is not set or does not resolve.
+                     * Legacy default client id. Still accepted as a fallback for orgs that
+                     * installed the app before the multi-client_id rollout.
+                     *
                      * example:
                      * client_123
                      */
-                    client_id: string;
+                    client_id?: string;
                     /**
-                     * Name of the app_options field whose value should be used as the client id for this automation. When unset, client_id is used.
+                     * List of named Schufa client_id credentials configured by the org. The automation
+                     * picks one entry by `client_id_key` (the entry's stable id). Each entry's
+                     * `client_id` value is encrypted at rest by app-api and arrives decrypted here.
+                     *
+                     */
+                    client_ids?: {
+                        /**
+                         * Stable, server-assigned identifier for this entry.
+                         * example:
+                         * 01HZ...
+                         */
+                        id: string;
+                        /**
+                         * Human-readable label for the entry.
+                         * example:
+                         * Werk35
+                         */
+                        name?: string;
+                        /**
+                         * The Schufa client id for this entry.
+                         * example:
+                         * abc123
+                         */
+                        client_id: string;
+                    }[];
+                    /**
+                     * Id of the `client_ids` entry to use for this automation. When unset and
+                     * a single `client_ids` entry exists, that entry is used; otherwise the
+                     * legacy `client_id` is used as a last resort.
+                     *
                      * example:
-                     * client_id_score
+                     * 01HZ...
                      */
                     client_id_key?: string;
                 };

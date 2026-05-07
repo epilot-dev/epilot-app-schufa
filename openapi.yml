@@ -65,8 +65,6 @@ components:
                   app_options:
                     type: object
                     additionalProperties: true
-                    required:
-                      - client_id
                     properties:
                       enable_test_mode:
                         type: boolean
@@ -74,12 +72,41 @@ components:
                         default: false
                       client_id:
                         type: string
-                        description: The default client id of the schufa app. Used when client_id_key is not set or does not resolve.
+                        description: |
+                          Legacy default client id. Still accepted as a fallback for orgs that
+                          installed the app before the multi-client_id rollout.
                         example: "client_123"
+                      client_ids:
+                        type: array
+                        description: |
+                          List of named Schufa client_id credentials configured by the org. The automation
+                          picks one entry by `client_id_key` (the entry's stable id). Each entry's
+                          `client_id` value is encrypted at rest by app-api and arrives decrypted here.
+                        items:
+                          type: object
+                          required:
+                            - id
+                            - client_id
+                          properties:
+                            id:
+                              type: string
+                              description: Stable, server-assigned identifier for this entry.
+                              example: "01HZ..."
+                            name:
+                              type: string
+                              description: Human-readable label for the entry.
+                              example: "Werk35"
+                            client_id:
+                              type: string
+                              description: The Schufa client id for this entry.
+                              example: "abc123"
                       client_id_key:
                         type: string
-                        description: Name of the app_options field whose value should be used as the client id for this automation. When unset, client_id is used.
-                        example: "client_id_score"
+                        description: |
+                          Id of the `client_ids` entry to use for this automation. When unset and
+                          a single `client_ids` entry exists, that entry is used; otherwise the
+                          legacy `client_id` is used as a last resort.
+                        example: "01HZ..."
                   entity:
                     type:: object
                     additionalProperties: true

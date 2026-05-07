@@ -13,21 +13,17 @@ import {
 	Text,
 } from "@epilot/volt-ui";
 import { useTranslation } from "react-i18next";
-import type { ClientIdOption, SchufaActionConfig } from "../types";
+import type { ClientIdEntry, SchufaActionConfig } from "../types";
 
 const NONE_VALUE = "__default__";
 
 interface Props {
 	config: SchufaActionConfig;
-	clientIdOptions: ClientIdOption[];
+	entries: ClientIdEntry[];
 	onChange: (next: SchufaActionConfig) => void;
 }
 
-export function ClientIdSelector({
-	config,
-	clientIdOptions,
-	onChange,
-}: Props) {
+export function ClientIdSelector({ config, entries, onChange }: Props) {
 	const { t } = useTranslation();
 
 	const value = config.client_id_key ?? NONE_VALUE;
@@ -40,7 +36,7 @@ export function ClientIdSelector({
 		}
 	};
 
-	const hasOptions = clientIdOptions.length > 0;
+	const hasEntries = entries.length > 0;
 
 	return (
 		<>
@@ -58,7 +54,7 @@ export function ClientIdSelector({
 						<Select
 							value={value}
 							onValueChange={handleChange}
-							disabled={!hasOptions}
+							disabled={!hasEntries}
 						>
 							<SelectTrigger className="volt-min-h-9">
 								<SelectValue placeholder={t("placeholder")} />
@@ -67,24 +63,20 @@ export function ClientIdSelector({
 								<SelectItem value={NONE_VALUE}>
 									{t("default_option")}
 								</SelectItem>
-								{clientIdOptions.map((option) => (
-									<SelectItem key={option.key} value={option.key}>
-										<div className="volt-flex volt-flex-col">
-											<span>{option.label?.trim() || option.key}</span>
-											{option.label?.trim() && (
-												<span className="volt-text-xs volt-text-gray-a11">
-													{option.key}
-												</span>
-											)}
-										</div>
-									</SelectItem>
-								))}
+								{entries.map((entry) => {
+									const label = entry.name?.trim();
+									return (
+										<SelectItem key={entry.id} value={entry.id}>
+											<span>{label || entry.id}</span>
+										</SelectItem>
+									);
+								})}
 							</SelectContent>
 						</Select>
 					</Field>
-					{!hasOptions && (
+					{!hasEntries && (
 						<Text variant="helper1" className="volt-text-tertiary">
-							{t("no_options")}
+							{t("no_entries")}
 						</Text>
 					)}
 				</div>

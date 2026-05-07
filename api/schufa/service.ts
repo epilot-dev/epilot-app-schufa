@@ -32,15 +32,47 @@ export function isUserConsentPresent(entity: SchufaPayload) {
 type AppOptions =
 	Components.RequestBodies.SchufaCheckRequest["data"]["app_options"];
 
+/**
+ * Resolve the Schufa `client_id` to use for this automation, given the
+ * options the org configured at install time and the entry the automation
+ * itself selected.
+ *
+ * Priority:
+ *   1. `client_ids[]` entry whose `id === client_id_key`.
+ *   2. If exactly one `client_ids` entry exists, use it.
+ *   3. Legacy `app_options.client_id` (kept for orgs installed before the
+ *      multi-credential rollout).
+ *
+ * Throws when none of the above resolves — that's a misconfigured automation
+ * and is more useful as a 400 than a silent miscall to Schufa.
+ */
 export function resolveClientId(app_options: AppOptions): string {
-	const key = app_options.client_id_key;
-	if (key) {
-		const value = app_options[key];
-		if (typeof value === "string" && value.length > 0) {
-			return value;
-		}
+	const entries = Array.isArray(app_options.client_ids)
+		? app_options.client_ids
+		: [];
+
+	if (app_options.client_id_key) {
+		const match = entries.find((e) => e?.id === app_options.client_id_key);
+		if (match?.client_id) return match.client_id;
 	}
-	return app_options.client_id;
+
+	if (entries.length === 1 && entries[0]?.client_id) {
+		return entries[0].client_id;
+	}
+
+	if (
+		typeof app_options.client_id === "string" &&
+		app_options.client_id.length > 0
+	) {
+		return app_options.client_id;
+	}
+
+	throw new VisibleError(
+		"Es ist keine SCHUFA Client-ID konfiguriert. Bitte konfiguriere die App-Installation.",
+		"NO_CLIENT_ID",
+		400,
+		{ has_key: !!app_options.client_id_key, entries: entries.length },
+	);
 }
 
 // entity is already hydrated from the automation worker

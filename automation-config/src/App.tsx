@@ -3,7 +3,7 @@ import { ClientIdSelector } from "./components/ClientIdSelector";
 import { useActionConfig } from "./hooks/useActionConfig";
 
 export function App() {
-	const { config, updateConfig, clientIdOptions, loaded } = useActionConfig();
+	const { config, updateConfig, entries, loaded } = useActionConfig();
 
 	if (!loaded) {
 		return (
@@ -20,7 +20,7 @@ export function App() {
 			<Card className="volt-w-full">
 				<ClientIdSelector
 					config={config}
-					clientIdOptions={clientIdOptions}
+					entries={entries}
 					onChange={updateConfig}
 				/>
 			</Card>
