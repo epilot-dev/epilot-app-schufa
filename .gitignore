@@ -4,6 +4,8 @@ node_modules
 .sst
 
 .certificates
+.certificates-25-05-2026
+.certificates-settings
 
 *.b64
 
