@@ -976,9 +976,7 @@ describe("SchufaService", () => {
 		it("uses the only entry when no key is set and one entry is configured", () => {
 			expect(
 				resolveClientId({
-					client_ids: [
-						{ id: "id-1", name: "Default", client_id: "xyz" },
-					],
+					client_ids: [{ id: "id-1", name: "Default", client_id: "xyz" }],
 				}),
 			).toBe("xyz");
 		});
