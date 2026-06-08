@@ -127,8 +127,8 @@ export async function getCreditScoreForUser(params: {
 		);
 
 		if (!user?.details) {
-			new VisibleError("Test user not found", "NO_TEST_USER", 400, {
-				contact: params.contact,
+			throw new VisibleError("Test user not found", "NO_TEST_USER", 400, {
+				contact: sanitizeContact(params.contact),
 			});
 		}
 
