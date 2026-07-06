@@ -26,7 +26,9 @@ npm run dev
 
 ## Renew certificate
 
-SCHUFA's certificate portal ships an `schufa-offline-openssl.zip` containing the OpenSSL config files you need — `Testumgebung_SCHUFA.cnf` for TEST, `Produktionsumgebung_SCHUFA.cnf` for PROD. Use these as-is; do not hand-write the CSR subject, the portal validates it byte-for-byte against the registered profile.
+SCHUFA's certificate portal ships an `schufa-offline-openssl.zip` containing the OpenSSL config files you need — `Testumgebung_SCHUFA.cnf` for TEST, `Produktionsumgebung_SCHUFA.cnf` for PROD. Use these as-is; do not hand-write the CSR subject, the portal validates it byte-for-byte against the registered profile (whatever is in the cnf is overwritten with the portal's registered values, so the company name etc. comes from SCHUFA, not your cnf).
+
+> **⚠️ A freshly issued cert is NOT live immediately — it activates overnight.** SCHUFA authorizes a client by the cert's **serial number**, and a new cert is only bound to your client in an **overnight batch** on their side. Until that runs, the token endpoint returns **HTTP 403** even though the cert is valid and TLS-trusted. So **do not deploy a new cert the same day you generate it** — wait a day and confirm with the token probe in step 8 first. The old cert keeps working until its expiry date, so there is no rush. (This bit us on the PROD G2→L3 CA migration; TEST renewals on the unchanged CA appeared to activate immediately.)
 
 The TEST and PROD profiles each have their own cert + key, mapped to separate SST secrets:
 
@@ -103,13 +105,31 @@ pnpm run sst secret set TestEpilotKey  "$(cat .certificates-<date>/TEST_key.b64)
 
 If `cat` fails (wrong path), SST still runs the command with an empty string — always check the files exist with `ls` first.
 
-### 8. Deploy
+### 8. Confirm SCHUFA has activated the cert (esp. PROD)
+
+A new cert is bound to your client in an overnight batch (see the warning above) — a same-day cert returns HTTP 403. Before deploying, confirm activation with a direct token request. This uses the cert/key locally, so it tests the real cert without touching the deployed secret:
+
+```bash
+curl -sS -m 25 -o /dev/null -w "%{http_code}\n" \
+  --cert SCHUFA-Test.crt --key PrivKey-Test-unencrypted.pem \
+  -d "grant_type=client_credentials&scope=hub-api-products&client_id=<CLIENT_ID>" \
+  https://auth.hubsandbox.schufa.de/auth/realms/hub/protocol/openid-connect/token
+# PROD: swap the cert/key, use the prod client_id, and host https://auth.hub.schufa.de
+```
+
+- `200` → activated and bound to this client. Proceed to deploy.
+- `403` → valid cert, but not yet bound to this client — wait for the overnight run, or contact SCHUFA to activate the new serial.
+- `401` → the `client_id` is wrong (the cert itself reached the backend fine).
+
+The `client_id` is not a secret — the mTLS cert is the credential. To double-check which cert the backend actually accepted, base64-decode the JWT payload from a `200` and look at the `"cert"` claim; it should be the new cert's serial.
+
+### 9. Deploy
 
 ```bash
 pnpm run sst deploy --stage <stage>
 ```
 
-### 9. Smoke test
+### 10. Smoke test
 
 Hit a SCHUFA endpoint against the deployed stage to confirm the new cert works end-to-end before considering the rotation done.
 

@@ -19,11 +19,23 @@ interface CachedToken extends OAuthTokenResponse {
 interface HttpResponse {
 	status: number;
 	ok: boolean;
+	body: string;
+	headers: import("node:http").IncomingHttpHeaders;
 	json: () => Promise<OAuthTokenResponse>;
 }
 
 // Global variable for Lambda container reuse (warm starts)
 let tokenCache: CachedToken | null = null;
+
+// Fingerprints a PEM for logs WITHOUT leaking it: a real cert/key is a long
+// string starting with "-----BEGIN ...", while an unset SST secret is the
+// short "...-placeholder" default. Lets us tell "secret didn't deploy" apart
+// from "SCHUFA rejected a valid cert".
+function describePem(pem?: string) {
+	if (!pem) return "MISSING";
+	const head = pem.split("\n", 1)[0] ?? "";
+	return `len=${pem.length} head=${JSON.stringify(head)}`;
+}
 
 export async function useSchufaAuthTokenOrThrow(client_id: string) {
 	if (tokenCache && tokenCache.expires_at > Date.now()) {
@@ -32,6 +44,13 @@ export async function useSchufaAuthTokenOrThrow(client_id: string) {
 
 	try {
 		const config = useSchufaConfig();
+
+		logger.info("requesting SCHUFA auth token", {
+			authUrl: config.baseAuthUrl,
+			client_id,
+			cert: describePem(config.secret.cert),
+			key: describePem(config.secret.key),
+		});
 
 		const postData = new URLSearchParams({
 			client_id,
@@ -57,28 +76,42 @@ export async function useSchufaAuthTokenOrThrow(client_id: string) {
 					// biome-ignore lint/suspicious/noAssignInExpressions: yolo
 					res.on("data", (chunk) => (data += chunk));
 					res.on("end", () => {
-						try {
-							const status = res.statusCode ?? 200;
-							const parsedData = JSON.parse(data || "{}");
-							resolve({
-								status,
-								ok: status >= 200 && status < 300,
-								json: () => Promise.resolve(parsedData),
-							});
-						} catch (parseError) {
-							reject(new Error(`JSON parse error: ${parseError}`));
-						}
+						const status = res.statusCode ?? 0;
+						resolve({
+							status,
+							ok: status >= 200 && status < 300,
+							body: data,
+							headers: res.headers,
+							json: () => Promise.resolve(JSON.parse(data || "{}")),
+						});
 					});
 				},
 			);
 
-			req.on("error", reject);
+			req.on("error", (err) => {
+				// genuine transport failure (DNS, TLS handshake, connection reset)
+				// — distinct from SCHUFA answering with a non-2xx below.
+				logger.error("transport error contacting SCHUFA auth endpoint", {
+					authUrl: config.baseAuthUrl,
+					code: (err as NodeJS.ErrnoException).code,
+					message: err.message,
+				});
+				reject(err);
+			});
 			req.write(postData);
 			req.end();
 		});
 
 		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
+			logger.error("SCHUFA auth endpoint returned non-2xx", {
+				status: response.status,
+				body: response.body || "(empty body)",
+				wwwAuthenticate: response.headers["www-authenticate"],
+				amznRequestId: response.headers["x-amzn-requestid"],
+			});
+			throw new Error(
+				`SCHUFA token HTTP ${response.status}: ${response.body || "(empty body)"}`,
+			);
 		}
 
 		const tokenData = await response.json();
