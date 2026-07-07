@@ -2,26 +2,64 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Credit Report",
-    "description": "Knowing the creditworthiness of a customer is a key factor for sustainably successful business decisions - both when acquiring a business and throughout the entire customer life cycle. In order to assess the creditworthiness of potential new customers, reliable and up-to-date data is required.\n    \nSCHUFA supports the economy by providing meaningful information on risk management. If a SCHUFA contract partner is faced with the decision to grant a consumer a financial or commercial loan, they can request information about the consumer from SCHUFA in order to assess their risk. SCHUFA transmits this information at the request of contractual partners in the form of SCHUFA credit reports on natural persons.\n\nA SCHUFA credit report contains:\n  - Person data (personal master data: Surname, first name, current address, gender, date of birth, place of birth, SCHUFA-Perskey)\n  - Information on the establishment of a business relationship and the contractual processing (“positive data”)\n  - Data on the non-contractual processing of transactions (“negative data”)\n  - Data from public directories and official announcements (“public negative data”). \n  - Other inquiries about the consumer from the last 10 days.\n  - SCHUFA FraudPool information if the contractual partner participates in the SCHUFA FraudPool.\n    \nAccording to the regulations of the General Data Protection Regulation (DS-GVO), a contractual partner must credibly declare its legitimate interest in receiving this information to SCHUFA and must ensure that this is the case in each individual case. He does this as part of his inquiry for the information requested by calling up the corresponding endpoint that matches the reason for the inquiry. This is the legal prerequisite for providing information to the contractual partner."
+    "description": "Knowing the creditworthiness of a customer is a key factor for sustainably successful business decisions - both when acquiring a business and throughout the entire customer life cycle. In order to assess the creditworthiness of potential new customers, reliable and up-to-date data is required.\n\nSCHUFA supports the economy by providing meaningful information on risk management. If a SCHUFA contract partner is faced with the decision to grant a consumer a financial or commercial loan, they can request information about the consumer from SCHUFA in order to assess their risk. SCHUFA transmits this information at the request of contractual partners in the form of SCHUFA credit reports on natural persons.\n\nA SCHUFA credit report contains:\n  - Person data (personal master data: Surname, first name, current address, gender, date of birth, place of birth, SCHUFA-Perskey)\n  - Information on the establishment of a business relationship and the contractual processing (\u201cpositive data\u201d)\n  - Data on the non-contractual processing of transactions (\u201cnegative data\u201d)\n  - Data from public directories and official announcements (\u201cpublic negative data\u201d).\n  - Other inquiries about the consumer from the last 10 days.\n  - SCHUFA FraudPool information if the contractual partner participates in the SCHUFA FraudPool.\n\nAccording to the regulations of the General Data Protection Regulation (DS-GVO), a contractual partner must credibly declare its legitimate interest in receiving this information to SCHUFA and must ensure that this is the case in each individual case. He does this as part of his inquiry for the information requested by calling up the corresponding endpoint that matches the reason for the inquiry. This is the legal prerequisite for providing information to the contractual partner.",
+    "version": "1.0.0",
+    "termsOfService": "https://developer.schufa.de/terms-and-conditions",
+    "contact": {
+      "name": "SCHUFA Business Customer Support",
+      "email": "vp-servicedesk@schufa.de"
+    },
+    "license": {
+      "name": "SCHUFA REST APIs",
+      "url": "https://developer.schufa.de/terms-and-conditions"
+    }
   },
   "servers": [
     {
-      "url": "https://api.hubsandbox.schufa.de/credit-report",
-      "description": "SCHUFA VP-Test"
+      "url": "https://api.sandbox.schufa.de/credit-report",
+      "description": "SCHUFA VP Test"
     },
     {
-      "url": "https://api.hub.schufa.de/credit-report",
+      "url": "https://api.schufa.de/credit-report",
       "description": "SCHUFA Production"
+    }
+  ],
+  "security": [
+    {
+      "vptest": [
+        "default"
+      ]
+    },
+    {
+      "production": [
+        "default"
+      ]
     }
   ],
   "tags": [
     {
-      "name": "Private Customer API",
-      "description": "The Private Customer API is used when the person inquired is a private customer. For this purpose, a request with identification data (personal data of the customer) is transmitted to SCHUFA in order to obtain a credit report in return."
+      "name": "Bank Accounts API",
+      "description": "The Bank BankAccount Report API is used within the scope of claim management in the public sector. For this purpose, a request with identification data (personal data of the debtor) is transmitted to SCHUFA in order to obtain a report about all existing accounts in return."
+    },
+    {
+      "name": "Business Customer API",
+      "description": "The Business Customer API is used when the person inquired is a business customer (freelancer or small-business). For this purpose, a request with identification data (personal data of the customer) is transmitted to SCHUFA in order to obtain a credit report in return."
+    },
+    {
+      "name": "Conditions API",
+      "description": "The Conditions API is used in the context of the preparation of an loan offer for the customer. For this purpose, a request with identification data (personal data of the customer) is transmitted to SCHUFA in order to obtain a credit report in return."
+    },
+    {
+      "name": "Collection API",
+      "description": "The Collection API is used within the scope of a collection processing. For this purpose, a request with identification data (personal data of the customer) is transmitted to SCHUFA in order to obtain a credit report in return."
     },
     {
       "name": "Manual Processing API",
       "description": "The Manual Processing API is used to enquire the result of a credit report request that has been forwarded to manual processing. The reportId supplied with the response to the original Enquiry must be provided for this purpose."
+    },
+    {
+      "name": "Private Customer API",
+      "description": "The Private Customer API is used when the person inquired is a private customer. For this purpose, a request with identification data (personal data of the customer) is transmitted to SCHUFA in order to obtain a credit report in return."
     }
   ],
   "paths": {
@@ -30,187 +68,192 @@
         "tags": [
           "Private Customer API"
         ],
-        "summary": "Request to control own inquiries and messages about an ongoing business relationship.",
-        "description": "Enquiry for control purposes of a private customer with whom a contractual relationship already exists. This is an inquiry about existing contractual relationships or contractual relationships that are being processed, e.g. to check your own inquiries and reports or undisputed claims which have not (yet) fulfilled the preconditions of §31, section 2 BDSG (Legacy enquiry attribute: AU). The legitimate interest is justified by the conclusion of a contract between the consumer and the contract partner.",
+        "summary": "Request to control own inquiries and messages about an ongoing business relationship with private customers.",
+        "description": "Enquiry for control purposes of a private customer with whom a contractual relationship already exists. This is an inquiry about existing contractual relationships or contractual relationships that are being processed, e.g. to check your own inquiries and reports or undisputed claims which have not (yet) fulfilled the preconditions of \u00a731, section 2 BDSG (Legacy enquiry attribute: AU). The legitimate interest is justified by the conclusion of a contract between the consumer and the contract partner.",
         "operationId": "checks",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreditRatingRequest"
-              }
-            }
-          },
-          "required": true
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
         },
         "responses": {
           "200": {
-            "description": "Result of a credit report",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreditRatingInformation"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200_CreditReport"
           },
           "202": {
-            "description": "Accepted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EnquiryInProcessing"
-                },
-                "example": {
-                  "message": "Manual processing of the enquiry is necessary",
-                  "reportId": "08154711",
-                  "href": "https://api.hub.schufa.de/credit-report/manual-processing/08154711"
-                }
-              }
-            }
+            "$ref": "#/components/responses/202_ManualProcessing"
           },
           "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail",
-                  "title": "ProblemDetail"
-                },
-                "examples": {
-                  "Bad Request": {
-                    "description": "Your request did not validate",
-                    "value": {
-                      "title": "Bad Request",
-                      "status": 400,
-                      "detail": "Your request did not validate",
-                      "violations": [
-                        {
-                          "field": "personData.firstName",
-                          "message": "must match ^[A-Za-z0-9]{1,44}$"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/400_BadRequest"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Not fully authenticated": {
-                    "description": "Full authentication is required to access this resource",
-                    "value": {
-                      "title": "Unauthorized",
-                      "status": 401,
-                      "detail": "Full authentication is required to access this resource"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/401_Unauthorized"
           },
           "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Not sufficiently authenticated": {
-                    "description": "The client is not authorized to access this resource.",
-                    "value": {
-                      "title": "Forbidden",
-                      "status": 403,
-                      "detail": "Not sufficient rights."
-                    }
-                  },
-                  "Contact support": {
-                    "description": "Please contact support.",
-                    "value": {
-                      "title": "Forbidden",
-                      "status": 403,
-                      "detail": "Please contact support.",
-                      "requestId": "89aab92e-109c-42e2-b9g9-9f38f6dec444/sfhub"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/403_Forbidden"
           },
           "404": {
-            "description": "The request was valid, but the requested Person could not be uniquely identified in the Schufa database.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Not Found",
-                  "status": 404,
-                  "detail": "Person was not found in Schufa database",
-                  "instance": "/endpoint",
-                  "requestId": "081c7461-de5f-4161-b4a3-00409023157a."
-                }
-              }
-            }
+            "$ref": "#/components/responses/404_NotFound"
           },
           "422": {
-            "description": "Unprocessable Entity",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Manual Processing not requested": {
-                    "description": "Manual Processing not requested",
-                    "value": {
-                      "title": "Unprocessable Entity",
-                      "status": 422,
-                      "detail": "Automated retrieval of the product for this person not possible. Manual processing is not requested by you and therefore not proceeded."
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/422_UnprocessableEntity"
           },
           "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Internal Server Error": {
-                    "description": "Internal Server Error",
-                    "value": {
-                      "title": "Internal Server Error",
-                      "status": 500,
-                      "requestId": "89aab92e-109c-42e2-b9g9-9f38f6dec444/sfhub"
-                    }
-                  },
-                  "Retry or contact support": {
-                    "description": "Please try again. If the error persists, contact support.",
-                    "value": {
-                      "title": "Internal Server Error",
-                      "status": 500,
-                      "detail": "Please try again. If the error persists, contact support.",
-                      "requestId": "89aab92e-109c-42e2-b9g9-9f38f6dec444/sfhub"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/collection": {
+      "post": {
+        "tags": [
+          "Collection API"
+        ],
+        "summary": "Enquiry within the scope of collection processing",
+        "description": "Request for a credit report as part of the collection processing if the preconditions of \u00a731, section 2 BDSG for reporting the claim are fulfilled (Legacy enquiry attribute: AI). The legitimate interest is justified by the takeover of a claim against a consumer by a debt collection company.",
+        "operationId": "collection",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/commerce": {
+      "post": {
+        "tags": [
+          "Private Customer API"
+        ],
+        "summary": "Commercial enquiry concerning delivery of goods or services",
+        "description": "Credit Report on the occasion of an order on account or a payment by installment (Legacy enquiry attribute: AH). The legitimate interest is justified by the conclusion of a contract between the consumer and a commercial company.",
+        "operationId": "commerce",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/conditions/loans": {
+      "post": {
+        "tags": [
+          "Conditions API"
+        ],
+        "summary": "Enquiry concerning terms of loans",
+        "description": "Request of a credit report in the process of loan offers in order to offer risk-appropriate loan terms (Legacy enquiry attribute: KK). The legitimate interest is justified by the requirements of Basel II and the German Banking Act (KWG), which require the credit conditions to be risk-adequate.",
+        "operationId": "conditionsLoans",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/conditions/real-estate-loans": {
+      "post": {
+        "tags": [
+          "Conditions API"
+        ],
+        "summary": "Enquiry concerning terms of real estate loan",
+        "description": "Request of a credit report in the process of real estate loan offers in order to offer risk-appropriate loan terms (Legacy enquiry attribute: KH). The legitimate interest is justified by the requirements of Basel II and the German Banking Act (KWG), which require the credit conditions to be risk-adequate.",
+        "operationId": "conditionsRealEstateLoans",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
           }
         }
       }
@@ -224,183 +267,188 @@
         "description": "Request for a credit report based on the conclusion of an energy contract or energy-related service with the consumer (Legacy enquiry attribute: AE). The legitimate interest is justified by the conclusion of an energy contract between the consumer and the contract partner.",
         "operationId": "energy",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreditRatingRequest"
-              }
-            }
-          },
-          "required": true
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
         },
         "responses": {
           "200": {
-            "description": "Result of a credit report",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreditRatingInformation"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200_CreditReport"
           },
           "202": {
-            "description": "Accepted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EnquiryInProcessing"
-                },
-                "example": {
-                  "message": "Manual processing of the enquiry is necessary",
-                  "reportId": "08154711",
-                  "href": "https://api.hub.schufa.de/credit-report/manual-processing/08154711"
-                }
-              }
-            }
+            "$ref": "#/components/responses/202_ManualProcessing"
           },
           "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail",
-                  "title": "ProblemDetail"
-                },
-                "examples": {
-                  "Bad Request": {
-                    "description": "Your request did not validate",
-                    "value": {
-                      "title": "Bad Request",
-                      "status": 400,
-                      "detail": "Your request did not validate",
-                      "violations": [
-                        {
-                          "field": "personData.firstName",
-                          "message": "must match ^[A-Za-z0-9]{1,44}$"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/400_BadRequest"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Not fully authenticated": {
-                    "description": "Full authentication is required to access this resource",
-                    "value": {
-                      "title": "Unauthorized",
-                      "status": 401,
-                      "detail": "Full authentication is required to access this resource"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/401_Unauthorized"
           },
           "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Not sufficiently authenticated": {
-                    "description": "The client is not authorized to access this resource.",
-                    "value": {
-                      "title": "Forbidden",
-                      "status": 403,
-                      "detail": "Not sufficient rights."
-                    }
-                  },
-                  "Contact support": {
-                    "description": "Please contact support.",
-                    "value": {
-                      "title": "Forbidden",
-                      "status": 403,
-                      "detail": "Please contact support.",
-                      "requestId": "89aab92e-109c-42e2-b9g9-9f38f6dec444/sfhub"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/403_Forbidden"
           },
           "404": {
-            "description": "The request was valid, but the requested Person could not be uniquely identified in the Schufa database.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Not Found",
-                  "status": 404,
-                  "detail": "Person was not found in Schufa database",
-                  "instance": "/endpoint",
-                  "requestId": "081c7461-de5f-4161-b4a3-00409023157a."
-                }
-              }
-            }
+            "$ref": "#/components/responses/404_NotFound"
           },
           "422": {
-            "description": "Unprocessable Entity",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Manual Processing not requested": {
-                    "description": "Manual Processing not requested",
-                    "value": {
-                      "title": "Unprocessable Entity",
-                      "status": 422,
-                      "detail": "Automated retrieval of the product for this person not possible. Manual processing is not requested by you and therefore not proceeded."
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/422_UnprocessableEntity"
           },
           "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Internal Server Error": {
-                    "description": "Internal Server Error",
-                    "value": {
-                      "title": "Internal Server Error",
-                      "status": 500,
-                      "requestId": "89aab92e-109c-42e2-b9g9-9f38f6dec444/sfhub"
-                    }
-                  },
-                  "Retry or contact support": {
-                    "description": "Please try again. If the error persists, contact support.",
-                    "value": {
-                      "title": "Internal Server Error",
-                      "status": 500,
-                      "detail": "Please try again. If the error persists, contact support.",
-                      "requestId": "89aab92e-109c-42e2-b9g9-9f38f6dec444/sfhub"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/freelancers": {
+      "post": {
+        "tags": [
+          "Business Customer API"
+        ],
+        "summary": "Enquiry concerning freelancers",
+        "description": "Request for a credit report on the occasion of the commencement, implementation or settlement of a contractual relationship (Legacy enquiry attribute: A5). The legitimate interest is justified by the granting of a supplier credit between the freelancer and the contract partner.",
+        "operationId": "freelancers",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/freelancers/secured-investment-credits": {
+      "post": {
+        "tags": [
+          "Business Customer API"
+        ],
+        "summary": "Enquiry concerning investment credits secured by a land charge for business purposes (for freelancers)",
+        "description": "Request for a credit report on the occasion of an application for an investment credit secured by a land charge for business purposes (freelancers) (Legacy enquiry attribute: B7). The legitimate interest is justified by the conclusion of a loan agreement, a surety agreement or a co-obligation to a loan between the freelancer and the contract partner.",
+        "operationId": "freelancersSecuredInvestmentCredits",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/leasing": {
+      "post": {
+        "tags": [
+          "Private Customer API"
+        ],
+        "summary": "Enquiry concerning leasing",
+        "description": "Request for a credit report due to the conclusion of a lease/hire purchase (Legacy enquiry attribute: AL). The legitimate interest is justified by the conclusion of a leasing contract between the consumer and the contract partner.",
+        "operationId": "leasing",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/mail-orders": {
+      "post": {
+        "tags": [
+          "Private Customer API"
+        ],
+        "summary": "Enquiry of catalog companies concerning the delivery of goods and services.",
+        "description": "Request for a credit report on the occasion of a distance selling transaction (e.g. mail order or Internet order) (Legacy enquiry attribute: AV). The legitimate interest is justified by the conclusion of a contract between the consumer and a mail order company.",
+        "operationId": "mailOrders",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
           }
         }
       }
@@ -418,6 +466,7 @@
             "name": "reportId",
             "in": "path",
             "required": true,
+            "description": "reportId of the enquiry for which manual processing was necessary.",
             "schema": {
               "type": "string"
             }
@@ -425,177 +474,379 @@
         ],
         "responses": {
           "200": {
-            "description": "Result of a credit report",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreditRatingInformation"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200_CreditReport"
           },
           "202": {
-            "description": "Accepted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EnquiryInProcessing"
-                },
-                "examples": {
-                  "Manual processing not yet finished": {
-                    "description": "Manual processing not yet finished",
-                    "value": {
-                      "message": "Manual processing not yet finished.",
-                      "reportId": "08154711",
-                      "href": "https://api.hub.schufa.de/credit-report/manual-processing/08154711"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/202_ProcessingNotFinished"
           },
           "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail",
-                  "title": "ProblemDetail"
-                },
-                "examples": {
-                  "Bad Request": {
-                    "description": "Your request did not validate",
-                    "value": {
-                      "title": "Bad Request",
-                      "status": 400,
-                      "detail": "Your request did not validate",
-                      "violations": [
-                        {
-                          "field": "personData.firstName",
-                          "message": "must match ^[A-Za-z0-9]{1,44}$"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/400_BadRequest"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Not fully authenticated": {
-                    "description": "Full authentication is required to access this resource",
-                    "value": {
-                      "title": "Unauthorized",
-                      "status": 401,
-                      "detail": "Full authentication is required to access this resource"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/401_Unauthorized"
           },
           "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Not sufficiently authenticated": {
-                    "description": "The client is not authorized to access this resource.",
-                    "value": {
-                      "title": "Forbidden",
-                      "status": 403,
-                      "detail": "Not sufficient rights."
-                    }
-                  },
-                  "Contact support": {
-                    "description": "Please contact support.",
-                    "value": {
-                      "title": "Forbidden",
-                      "status": 403,
-                      "detail": "Please contact support.",
-                      "requestId": "89aab92e-109c-42e2-b9g9-9f38f6dec444/sfhub"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/403_Forbidden"
           },
           "404": {
-            "description": "The request was valid, but the requested Person could not be uniquely identified in the Schufa database.",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Not Found",
-                  "status": 404,
-                  "detail": "Person was not found in Schufa database",
-                  "instance": "/endpoint",
-                  "requestId": "081c7461-de5f-4161-b4a3-00409023157a."
-                }
-              }
-            }
+            "$ref": "#/components/responses/404_ReportNotFound"
           },
           "422": {
-            "description": "Unprocessable Entity",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Report cannot be provided": {
-                    "description": "Report cannot be provided",
-                    "value": {
-                      "title": "Unprocessable Entity",
-                      "status": 422,
-                      "detail": "Report cannot be provided online. Further information can only be obtained from SCHUFA by phone."
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/422_ReportUnprocessable"
           },
           "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OpenApiProblemDetail"
-                },
-                "examples": {
-                  "Internal Server Error": {
-                    "description": "Internal Server Error",
-                    "value": {
-                      "title": "Internal Server Error",
-                      "status": 500,
-                      "requestId": "89aab92e-109c-42e2-b9g9-9f38f6dec444/sfhub"
-                    }
-                  },
-                  "Retry or contact support": {
-                    "description": "Please try again. If the error persists, contact support.",
-                    "value": {
-                      "title": "Internal Server Error",
-                      "status": 500,
-                      "detail": "Please try again. If the error persists, contact support.",
-                      "requestId": "89aab92e-109c-42e2-b9g9-9f38f6dec444/sfhub"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/payment-methods": {
+      "post": {
+        "tags": [
+          "Private Customer API"
+        ],
+        "summary": "Enquiry concerning the offer of payment methods",
+        "description": "Credit report to manage the types of payment methods offered (Legacy enquiry attribute: ZV). The legitimate interest is justified by the conclusion of a contract between the consumer and the contract partner.",
+        "operationId": "paymentMethod",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/potential-tenants": {
+      "post": {
+        "tags": [
+          "Private Customer API"
+        ],
+        "summary": "Enquiry concerning potential lessees/tenants",
+        "description": "Request for a credit report on the occasion of the conclusion of a rental agreement with the customer (Legacy enquiry attribute: AM). The legitimate interest is justified by the conclusion of a rental contract between the consumer and the contract partner.",
+        "operationId": "potentialTenants",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/secured-loans": {
+      "post": {
+        "tags": [
+          "Private Customer API"
+        ],
+        "summary": "Enquiry concerning loans secured by charge on real estate",
+        "description": "Request for a credit report on the occasion of the application for a loan for real estate financing or mortgage-secured loan (Legacy enquiry attribute: AW). The legitimate interest is justified by the conclusion of a loan agreement, a surety agreement or a co-obligation to a loan between the consumer and the contract partner.",
+        "operationId": "securedLoans",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/services": {
+      "post": {
+        "tags": [
+          "Private Customer API"
+        ],
+        "summary": "Enquiry concerning services",
+        "description": "Request for a credit report on the basis of the conclusion of a contract with the consumer (Legacy enquiry attribute: AD). The legitimate interest is justified by the conclusion of a contract (e.g. car sharing contract) between the consumer and the contract partner.",
+        "operationId": "services",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/services/financial": {
+      "post": {
+        "tags": [
+          "Private Customer API"
+        ],
+        "summary": "Enquiry concerning financial services",
+        "description": "Request for a credit report on the basis of the conclusion of a financial services contract (e.g. insurance contract) with the consumer (Legacy enquiry attribute: AF). The legitimate interest is justified by the conclusion of a financial services contract (e.g. insurance contract) between the consumer and the contract partner.",
+        "operationId": "servicesFinancial",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/small-businesses": {
+      "post": {
+        "tags": [
+          "Business Customer API"
+        ],
+        "summary": "Enquiry concerning self-employed/small business owners",
+        "description": "Request for a credit report on the occasion of the commencement, execution or settlement of a contractual relationship (Legacy enquiry attribute: A6). The legitimate interest is justified by the granting of a supplier credit between the self-employed person or small business and the contract partner.",
+        "operationId": "smallBusinesses",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/small-businesses/checks": {
+      "post": {
+        "tags": [
+          "Business Customer API"
+        ],
+        "summary": "Request to control own inquiries and messages about an ongoing business relationship with self-employed/small business owners.",
+        "description": "Enquiry for control purposes of self-employed/small business owners with whom a contractual relationship already exists. This is an inquiry about existing contractual relationships or contractual relationships that are being processed, e.g. to check your own inquiries and reports or undisputed claims which have not (yet) fulfilled the preconditions of \u00a731, section 2 BDSG (Legacy enquiry attribute: GU). The legitimate interest is justified by the conclusion of a contract between the consumer and the contractual partner.",
+        "operationId": "smallBusinessesChecks",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/small-businesses/secured-investment-credits": {
+      "post": {
+        "tags": [
+          "Business Customer API"
+        ],
+        "summary": "Enquiry concerning investment credits secured by a land charge for business purposes (for self-employed and small business owners)",
+        "description": "Request for a credit report on the occasion of an application for an investment credit secured by a land charge for business purposes (self-employed and small business owners) (Legacy enquiry attribute: B8). The legitimate interest is justified by the conclusion of a loan agreement, a surety agreement or a co-obligation to a loan between the self-employed person or small business and the contract partner.",
+        "operationId": "smallBusinessesSecuredInvestmentCredits",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
+          }
+        }
+      }
+    },
+    "/unsecured-loans": {
+      "post": {
+        "tags": [
+          "Private Customer API"
+        ],
+        "summary": "Enquiry concerning unsecured building loans or loans not secured by a charge on real estate",
+        "description": "Request for a credit report on the occasion of an application for a loan or as part of the regular credit report in an existing contractual relationship (Legacy enquiry attribute: AK). The legitimate interest is justified by the conclusion of a credit contract between the consumer and the contract partner.",
+        "operationId": "unsecuredLoans",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreditRatingRequestBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_CreditReport"
+          },
+          "202": {
+            "$ref": "#/components/responses/202_ManualProcessing"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403_Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/422_UnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/500_InternalServerError"
           }
         }
       }
@@ -605,6 +856,7 @@
     "schemas": {
       "CreditRatingRequest": {
         "type": "object",
+        "description": "Enquiry data for the credit rating.",
         "properties": {
           "personData": {
             "$ref": "#/components/schemas/PersonData"
@@ -613,30 +865,56 @@
             "type": "string",
             "description": "reference for the identification of own attributes (Formerly: Kontonummer)",
             "example": "ABC-123-DEF",
-            "pattern": "[A-Za-z\\dßÄÖÜäöü:/()',.\\-\\s]{1,25}"
+            "pattern": "[A-Za-z\\d\u00df\u00c4\u00d6\u00dc\u00e4\u00f6\u00fc:/()',.\\-\\s]{1,25}"
           }
         },
         "required": [
           "personData"
-        ]
+        ],
+        "example": {
+          "personData": {
+            "firstName": "Peter",
+            "lastName": "Maier",
+            "gender": "MALE",
+            "dateOfBirth": "1973-01-15",
+            "title": "Dr.",
+            "placeOfBirth": "Wiesbaden",
+            "addresses": {
+              "currentAddress": {
+                "streetWithNumber": "MAXIMILIANSTRA\u00dfe 20B",
+                "postalCode": "80539",
+                "city": "M\u00dcNCHEN",
+                "country": "DEU"
+              },
+              "previousAddress": {
+                "streetWithNumber": "SCHILLERSTRA\u00dfE 96",
+                "postalCode": "10625",
+                "city": "BERLIN",
+                "country": "DEU"
+              }
+            }
+          },
+          "reference": "ABC-123-DEF"
+        }
       },
-      "CurrentAddress": {
+      "Address": {
         "type": "object",
+        "description": "An address of the person.",
         "properties": {
           "streetWithNumber": {
             "type": "string",
-            "example": "MAXIMILIANSTRAße 20B",
-            "pattern": "[A-Za-z\\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\\-\\s]{1,46}"
+            "example": "MAXIMILIANSTRA\u00dfe 20B",
+            "pattern": "[A-Za-z\\d\u00df\u00c4\u00d6\u00dc\u00e4\u00f6\u00fc\u0104\u0105\u0141\u0142\u013d\u013e\u015a\u015b\u0160\u0161\u015e\u015f\u0164\u0165\u0179\u017a\u017d\u017e\u017b\u017c\u0154\u0155\u00c1\u00e1\u00c2\u00e2\u0102\u0103\u0139\u013a\u0106\u0107\u00c7\u00e7\u010c\u010d\u00c9\u00e9\u0118\u0119\u00cb\u00eb\u011a\u011b\u00cd\u00ed\u00ce\u00ee\u010e\u010f\u0189\u0111\u0143\u0144\u0147\u0148\u00d3\u00f3\u00d4\u00f4\u0150\u0151\u0158\u0159\u016e\u016f\u00da\u00fa\u0170\u0171\u00dd\u00fd\u0162\u0163\u00c3\u00c5\u00c6\u00c8\u00ca\u00cc\u00cf\u00d0\u00d1\u00d2\u00d5\u00d8\u00d9\u00db\u00de\u00c0\u00e0\u00e3\u00e5\u00e6\u00e8\u00ea\u00ec\u00ef\u00f0\u00f1\u00f2\u00f5\u00f8\u00f9\u00fb\u00fe\u00ff\u0152\u0153\u0178\u0192:/()',.\\-\\s]{1,46}"
           },
           "postalCode": {
             "type": "string",
-            "example": 80539,
+            "example": "80539",
             "pattern": "[A-Za-z\\d\\-\\s]{1,10}"
           },
           "city": {
             "type": "string",
-            "example": "MÜNCHEN",
-            "pattern": "[A-Za-z\\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\\-\\s]{1,44}"
+            "example": "M\u00dcNCHEN",
+            "pattern": "[A-Za-z\\d\u00df\u00c4\u00d6\u00dc\u00e4\u00f6\u00fc\u0104\u0105\u0141\u0142\u013d\u013e\u015a\u015b\u0160\u0161\u015e\u015f\u0164\u0165\u0179\u017a\u017d\u017e\u017b\u017c\u0154\u0155\u00c1\u00e1\u00c2\u00e2\u0102\u0103\u0139\u013a\u0106\u0107\u00c7\u00e7\u010c\u010d\u00c9\u00e9\u0118\u0119\u00cb\u00eb\u011a\u011b\u00cd\u00ed\u00ce\u00ee\u010e\u010f\u0189\u0111\u0143\u0144\u0147\u0148\u00d3\u00f3\u00d4\u00f4\u0150\u0151\u0158\u0159\u016e\u016f\u00da\u00fa\u0170\u0171\u00dd\u00fd\u0162\u0163\u00c3\u00c5\u00c6\u00c8\u00ca\u00cc\u00cf\u00d0\u00d1\u00d2\u00d5\u00d8\u00d9\u00db\u00de\u00c0\u00e0\u00e3\u00e5\u00e6\u00e8\u00ea\u00ec\u00ef\u00f0\u00f1\u00f2\u00f5\u00f8\u00f9\u00fb\u00fe\u00ff\u0152\u0153\u0178\u0192:/()',.\\-\\s]{1,44}"
           },
           "country": {
             "type": "string",
@@ -657,12 +935,12 @@
           "firstName": {
             "type": "string",
             "example": "Peter",
-            "pattern": "[A-Za-z\\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\\-\\s]{1,44}"
+            "pattern": "[A-Za-z\\d\u00df\u00c4\u00d6\u00dc\u00e4\u00f6\u00fc\u0104\u0105\u0141\u0142\u013d\u013e\u015a\u015b\u0160\u0161\u015e\u015f\u0164\u0165\u0179\u017a\u017d\u017e\u017b\u017c\u0154\u0155\u00c1\u00e1\u00c2\u00e2\u0102\u0103\u0139\u013a\u0106\u0107\u00c7\u00e7\u010c\u010d\u00c9\u00e9\u0118\u0119\u00cb\u00eb\u011a\u011b\u00cd\u00ed\u00ce\u00ee\u010e\u010f\u0189\u0111\u0143\u0144\u0147\u0148\u00d3\u00f3\u00d4\u00f4\u0150\u0151\u0158\u0159\u016e\u016f\u00da\u00fa\u0170\u0171\u00dd\u00fd\u0162\u0163\u00c3\u00c5\u00c6\u00c8\u00ca\u00cc\u00cf\u00d0\u00d1\u00d2\u00d5\u00d8\u00d9\u00db\u00de\u00c0\u00e0\u00e3\u00e5\u00e6\u00e8\u00ea\u00ec\u00ef\u00f0\u00f1\u00f2\u00f5\u00f8\u00f9\u00fb\u00fe\u00ff\u0152\u0153\u0178\u0192:/()',.\\-\\s]{1,44}"
           },
           "lastName": {
             "type": "string",
             "example": "Maier",
-            "pattern": "[A-Za-z\\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\\-\\s]{1,46}"
+            "pattern": "[A-Za-z\\d\u00df\u00c4\u00d6\u00dc\u00e4\u00f6\u00fc\u0104\u0105\u0141\u0142\u013d\u013e\u015a\u015b\u0160\u0161\u015e\u015f\u0164\u0165\u0179\u017a\u017d\u017e\u017b\u017c\u0154\u0155\u00c1\u00e1\u00c2\u00e2\u0102\u0103\u0139\u013a\u0106\u0107\u00c7\u00e7\u010c\u010d\u00c9\u00e9\u0118\u0119\u00cb\u00eb\u011a\u011b\u00cd\u00ed\u00ce\u00ee\u010e\u010f\u0189\u0111\u0143\u0144\u0147\u0148\u00d3\u00f3\u00d4\u00f4\u0150\u0151\u0158\u0159\u016e\u016f\u00da\u00fa\u0170\u0171\u00dd\u00fd\u0162\u0163\u00c3\u00c5\u00c6\u00c8\u00ca\u00cc\u00cf\u00d0\u00d1\u00d2\u00d5\u00d8\u00d9\u00db\u00de\u00c0\u00e0\u00e3\u00e5\u00e6\u00e8\u00ea\u00ec\u00ef\u00f0\u00f1\u00f2\u00f5\u00f8\u00f9\u00fb\u00fe\u00ff\u0152\u0153\u0178\u0192:/()',.\\-\\s]{1,46}"
           },
           "gender": {
             "type": "string",
@@ -676,18 +954,19 @@
           },
           "dateOfBirth": {
             "type": "string",
+            "description": "Only filled if the date of birth is known. Omit field if unknown.",
             "format": "date",
             "example": "1973-01-15"
           },
           "title": {
             "type": "string",
             "example": "Dr.",
-            "pattern": "[A-Za-z\\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\\-\\s]{0,30}"
+            "pattern": "[A-Za-z\\d\u00df\u00c4\u00d6\u00dc\u00e4\u00f6\u00fc\u0104\u0105\u0141\u0142\u013d\u013e\u015a\u015b\u0160\u0161\u015e\u015f\u0164\u0165\u0179\u017a\u017d\u017e\u017b\u017c\u0154\u0155\u00c1\u00e1\u00c2\u00e2\u0102\u0103\u0139\u013a\u0106\u0107\u00c7\u00e7\u010c\u010d\u00c9\u00e9\u0118\u0119\u00cb\u00eb\u011a\u011b\u00cd\u00ed\u00ce\u00ee\u010e\u010f\u0189\u0111\u0143\u0144\u0147\u0148\u00d3\u00f3\u00d4\u00f4\u0150\u0151\u0158\u0159\u016e\u016f\u00da\u00fa\u0170\u0171\u00dd\u00fd\u0162\u0163\u00c3\u00c5\u00c6\u00c8\u00ca\u00cc\u00cf\u00d0\u00d1\u00d2\u00d5\u00d8\u00d9\u00db\u00de\u00c0\u00e0\u00e3\u00e5\u00e6\u00e8\u00ea\u00ec\u00ef\u00f0\u00f1\u00f2\u00f5\u00f8\u00f9\u00fb\u00fe\u00ff\u0152\u0153\u0178\u0192:/()',.\\-\\s]{0,30}"
           },
           "placeOfBirth": {
             "type": "string",
             "example": "Wiesbaden",
-            "pattern": "[A-Za-z\\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\\-\\s]{0,24}"
+            "pattern": "[A-Za-z\\d\u00df\u00c4\u00d6\u00dc\u00e4\u00f6\u00fc\u0104\u0105\u0141\u0142\u013d\u013e\u015a\u015b\u0160\u0161\u015e\u015f\u0164\u0165\u0179\u017a\u017d\u017e\u017b\u017c\u0154\u0155\u00c1\u00e1\u00c2\u00e2\u0102\u0103\u0139\u013a\u0106\u0107\u00c7\u00e7\u010c\u010d\u00c9\u00e9\u0118\u0119\u00cb\u00eb\u011a\u011b\u00cd\u00ed\u00ce\u00ee\u010e\u010f\u0189\u0111\u0143\u0144\u0147\u0148\u00d3\u00f3\u00d4\u00f4\u0150\u0151\u0158\u0159\u016e\u016f\u00da\u00fa\u0170\u0171\u00dd\u00fd\u0162\u0163\u00c3\u00c5\u00c6\u00c8\u00ca\u00cc\u00cf\u00d0\u00d1\u00d2\u00d5\u00d8\u00d9\u00db\u00de\u00c0\u00e0\u00e3\u00e5\u00e6\u00e8\u00ea\u00ec\u00ef\u00f0\u00f1\u00f2\u00f5\u00f8\u00f9\u00fb\u00fe\u00ff\u0152\u0153\u0178\u0192:/()',.\\-\\s]{0,24}"
           },
           "addresses": {
             "$ref": "#/components/schemas/PersonDataAddresses"
@@ -698,55 +977,91 @@
           "firstName",
           "gender",
           "lastName"
-        ]
+        ],
+        "example": {
+          "firstName": "Peter",
+          "lastName": "Maier",
+          "gender": "MALE",
+          "dateOfBirth": "1973-01-15",
+          "title": "Dr.",
+          "placeOfBirth": "Wiesbaden",
+          "addresses": {
+            "currentAddress": {
+              "streetWithNumber": "MAXIMILIANSTRA\u00dfe 20B",
+              "postalCode": "80539",
+              "city": "M\u00dcNCHEN",
+              "country": "DEU"
+            },
+            "previousAddress": {
+              "streetWithNumber": "SCHILLERSTRA\u00dfE 96",
+              "postalCode": "10625",
+              "city": "BERLIN",
+              "country": "DEU"
+            }
+          }
+        }
       },
       "PersonDataAddresses": {
         "type": "object",
         "description": "Current and previous addresses of a person.",
         "properties": {
           "currentAddress": {
-            "$ref": "#/components/schemas/CurrentAddress"
+            "$ref": "#/components/schemas/Address"
           },
           "previousAddress": {
-            "$ref": "#/components/schemas/PreviousAddress"
+            "$ref": "#/components/schemas/Address"
           }
         },
         "required": [
           "currentAddress"
         ]
       },
-      "PreviousAddress": {
+      "PersonDataAddressesResponse": {
         "type": "object",
+        "description": "Current and previous address as well as secondary residences of a person.",
         "properties": {
-          "streetWithNumber": {
-            "type": "string",
-            "example": "SCHILLERSTRAßE 96",
-            "pattern": "[A-Za-z\\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\\-\\s]{1,46}"
+          "currentAddress": {
+            "$ref": "#/components/schemas/Address"
           },
-          "postalCode": {
-            "type": "string",
-            "example": 10625,
-            "pattern": "[A-Za-z\\d\\-\\s]{1,10}"
+          "previousAddress": {
+            "$ref": "#/components/schemas/Address"
           },
-          "city": {
-            "type": "string",
-            "example": "BERLIN",
-            "pattern": "[A-Za-z\\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\\-\\s]{1,44}"
-          },
-          "country": {
-            "type": "string",
-            "example": "DEU",
-            "pattern": "[A-Z]{3}"
+          "secondaryAddresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Address"
+            }
           }
         },
         "required": [
-          "city",
-          "postalCode",
-          "streetWithNumber"
-        ]
+          "currentAddress"
+        ],
+        "example": {
+          "currentAddress": {
+            "streetWithNumber": "MAXIMILIANSTRA\u00dfe 20B",
+            "postalCode": "10625",
+            "city": "BERLIN",
+            "country": "DEU"
+          },
+          "previousAddress": {
+            "streetWithNumber": "SCHILLERSTRA\u00dfE 96",
+            "postalCode": "80539",
+            "city": "M\u00dcNCHEN",
+            "country": "DEU"
+          },
+          "secondaryAddresses": [
+            {
+              "streetWithNumber": "EMSER STR. 11",
+              "postalCode": "70372",
+              "city": "STUTTGART",
+              "country": "DEU"
+            }
+          ]
+        }
       },
       "Amount": {
         "type": "object",
+        "description": "The amount of the information transferred is specified here (e.g. a loan amount).",
         "properties": {
           "amount": {
             "type": "integer",
@@ -797,11 +1112,20 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Balance"
-            }
+            },
+            "example": [
+              {
+                "amount": {
+                  "amount": 500,
+                  "currency": "EUR"
+                },
+                "date": "2025-07-01"
+              }
+            ]
           },
           "status": {
             "type": "string",
-            "description": "\"Values:\n* `OPEN` - Claim was opened\n* `HANDOVER_TO_COLLECTION` - Transfer of distressed claim to collection agency/internal collection department for collection purposes (Legacy attribute: UI)\n* `IRRECOVERABLE_CLAIM_WITH_TITLE` - Irrecoverable overdue claim / collection uneconomic (with title) (Legacy attribute: UF)\n* `IRRECOVERABLE_CLAIM_WITHOUT_TITLE` - Irrecoverable overdue claim / collection uneconomic (without title) (Legacy attribute: US)\n* `RETURN_OF_CLAIM_TO_CREDITOR_BY_COLLECTION` - Return of claim to creditor by collection agency/internal collection department (Legacy attribute: RI)\n* `PERSON_OBJECTS_CLAIM_TOWARDS_CONTRACT_PARTNER` - Person concerned objects directly towards contract partner about claim reported (Legacy attribute: WS)\n* `PERSON_OBJECTS_CLAIM_TOWARDS_SCHUFA` - Person concerned objects towards SCHUFA about claim reported (Legacy attribute: WV)\n* `BALANCE_SOLD` - Balance sold under assignment of claim (Legacy attribute: SZ)\n* `BALANCE_COMPARISON` - Balance comparison to avert insolvency in the case of due/overdue or titled claims (Legacy attribute: SV)\n* `SETTLED` - Indicates that the claim is settled. (Legacy attribute: ER)\n    ",
+            "description": "\"Values:\n* `OPEN` - Claim was opened\n* `HANDOVER_TO_COLLECTION` - Transfer of distressed claim to collection agency/internal collection department for collection purposes (Legacy attribute: UI)\n* `IRRECOVERABLE_CLAIM_WITH_TITLE` - Irrecoverable overdue claim / collection uneconomic (with title) (Legacy attribute: UF)\n* `IRRECOVERABLE_CLAIM_WITHOUT_TITLE` - Irrecoverable overdue claim / collection uneconomic (without title) (Legacy attribute: US)\n* `RETURN_OF_CLAIM_TO_CREDITOR_BY_COLLECTION` - Return of claim to creditor by collection agency/internal collection department (Legacy attribute: RI)\n* `PERSON_OBJECTS_CLAIM_TOWARDS_CONTRACT_PARTNER` - Person concerned objects directly towards contract partner about claim reported (Legacy attribute: WS)\n* `PERSON_OBJECTS_CLAIM_TOWARDS_SCHUFA` - Person concerned objects towards SCHUFA about claim reported (Legacy attribute: WV)\n* `BALANCE_SOLD` - Balance sold under assignment of claim (Legacy attribute: SZ)\n* `BALANCE_COMPARISON` - Balance comparison to avert insolvency in the case of due/overdue or titled claims (Legacy attribute: SV)\n* `SETTLED` - Indicates that the claim is settled. (Legacy attribute: ER)",
             "x-extensible-enum": [
               "OPEN",
               "HANDOVER_TO_COLLECTION",
@@ -813,7 +1137,8 @@
               "BALANCE_SOLD",
               "BALANCE_COMPARISON",
               "SETTLED"
-            ]
+            ],
+            "example": "OPEN"
           }
         },
         "required": [
@@ -824,63 +1149,72 @@
       },
       "Contract": {
         "type": "object",
-        "description": "Enquire about the customer",
+        "description": "Contracts of the customer",
         "properties": {
           "withDateOfBirth": {
-            "type": "boolean",
-            "description": "Indicates that the contract was reported to SCHUFA with the person's date of birth."
+            "$ref": "#/components/schemas/WithDateOfBirth"
           },
           "attributeName": {
             "type": "string",
-            "description": "Values:\n* `UNSECURED_LOAN` - Unsecured building society loan or instalment loan not secured by charge on real estate (Legacy attribute: KR)\n* `SURETY_FOR_LOAN_UNSECURED` - Surety for unsecured building society loan, loan not secured by charge on real estate or leasing/hire purchase (Legacy attribute: BU)\n* `CO_APPLICANT_UNSECURED_LOAN` - Co-applicant for unsecured building society loans or instalment loans not secured by charge on real estate(Legacy attribute: MA)\n* `SURETY_FOR_LOAN_SECURED` - Surety for loan secured by a charge on real estate (Legacy attribute: BP)\n* `LEASING` - Leasing/hire purchase (Legacy attribute: ML)\n* `UNSECURED_LOAN_BULLET_MATURITY` - Unsecured building society loan or loan with bullet maturity not secured by a charge on real estate (Legacy attribute: KX)\n* `SURETY_FOR_LOAN_WITH_FINAL_MATURITY` - Surety for unsecured building society loan or loan with bullet maturity not secured by charge on real estate (Legacy attribute: BX)\n* `CO_APPLICANT_LOAN_BULLET_MATURITY` - Co-applicant for loans, unsecured building society loans or loans with bullet maturity not secured by a charge on real estate (Legacy attribute: MX)\n* `FORWARD_LOAN` - Forward loan (Legacy attribute: HF)\n* `CURRENT_ACCOUNT` - Current account (Legacy attribute: GI)\n* `BUILDING_SOCIETY_LOAN_SECURED` - Building-society loan secured by declaration of commitment (Legacy attribute: HN)\n* `CO_APPLICANT_SECURED_LOAN` - Co-applicant for loans secured by a charge on real estate for real estate financing (Legacy attribute: MY)\n* `SECURED_LOAN` - Loan secured by a charge on real estate (Legacy attribute: HP)\n* `PERMANENT_ACCOUNT` - Permanent account (credit-based) (Legacy attribute: DC)\n* `SECURED_LOAN_NO_AMOUNT` - Loan secured by a charge on real estate (without amount) (Legacy attribute: HY)\n* `SURETY_FOR_LOAN_NO_AMOUNT` - Surety for loan secured by a charge on real estate (without amount) (Legacy attribute: BY)\n* `CREDIT_CARD` - Credit card or credit card account (Legacy attribute: CC)\n* `CREDIT_CARD_REVOLVING` - Credit card or credit card account with revolving limit (Legacy attribute: CR)\n* `LIQUIDATION_ACCOUNT` - Account in liquidation (Legacy attribute: KW)\n* `CREDIT_LINES_FREELANCERS` - Working capital credit lines for freelancers (Legacy attribute: K1)\n* `CREDIT_LINES_SMALL_BUSINESSES` - Working capital credit lines for self-employed/small business owners (Legacy attribute: K2)\n* `INVESTMENT_LOAN_FREELANCERS` - Capital investment loans for freelancers (Legacy attribute: K3)\n* `INVESTMENT_LOAN_SMALL_BUSINESSES` - Capital investment loans for self-employed/small business owners (Legacy attribute: K4)\n* `ACCOUNT_FREELANCERS` - Account for freelancers (Legacy attribute: K5)\n* `ACCOUNT_SMALL_BUSINESSES` - Account for self-employed/small business owners (Legacy attribute: K6)\n* `ABSOLUTE_GUARANTEE` - Absolute guarantee for businesses (Legacy attribute: K7)\n* `LEASING_FREELANCERS` - Leasing/hire purchase for business purposes (for freelancers) (Legacy attribute: M3)\n* `LEASING_SMALL_BUSINESSES` - Leasing/hire purchase for business purposes (for self-employed and small business owners) (Legacy attribute: M4)\n* `SECURED_INVESTMENT_CREDITS_FREELANCERS` - Investment credit secured by a land charge for business purposes (for freelancers) (Legacy attribute: M7)\n* `SECURED_INVESTMENT_CREDITS_SMALL_BUSINESSES` - Investment credit secured by a land charge for business purposes (for self-employed and small business owners) (Legacy attribute: M8)\n* `MASKED` - Anonymized / masked contract attribute (Legacy attribute: XX)\n        ",
+            "description": "Values:\n* `UNSECURED_LOAN` - Unsecured building society loan or instalment loan not secured by charge on real estate (Legacy attribute: KR)\n* `SURETY_FOR_LOAN_UNSECURED` - Surety for unsecured building society loan, loan not secured by charge on real estate or leasing/hire purchase (Legacy attribute: BU)\n* `CO_APPLICANT_UNSECURED_LOAN` - Co-applicant for unsecured building society loans or instalment loans not secured by charge on real estate(Legacy attribute: MA)\n* `SURETY_FOR_LOAN_SECURED` - Surety for loan secured by a charge on real estate (Legacy attribute: BP)\n* `LEASING` - Leasing/hire purchase (Legacy attribute: ML)\n* `UNSECURED_LOAN_BULLET_MATURITY` - Unsecured building society loan or loan with bullet maturity not secured by a charge on real estate (Legacy attribute: KX)\n* `SURETY_FOR_LOAN_WITH_FINAL_MATURITY` - Surety for unsecured building society loan or loan with bullet maturity not secured by charge on real estate (Legacy attribute: BX)\n* `CO_APPLICANT_LOAN_BULLET_MATURITY` - Co-applicant for loans, unsecured building society loans or loans with bullet maturity not secured by a charge on real estate (Legacy attribute: MX)\n* `FORWARD_LOAN` - Forward loan (Legacy attribute: HF)\n* `CURRENT_ACCOUNT` - Current account (Legacy attribute: GI)\n* `BASIC_PAYMENT_ACCOUNT` - Payment account with basic features (Legacy attribute: BS)\n* `CURRENT_ACCOUNT_SEIZURE_PROTECTION` - Current account with seizure protection (Legacy attribute: GP)\n* `BUILDING_SOCIETY_LOAN_SECURED` - Building-society loan secured by declaration of commitment (Legacy attribute: HN)\n* `CO_APPLICANT_SECURED_LOAN` - Co-applicant for loans secured by a charge on real estate for real estate financing (Legacy attribute: MY)\n* `SECURED_LOAN` - Loan secured by a charge on real estate (Legacy attribute: HP)\n* `PERMANENT_ACCOUNT` - Permanent account (credit-based) (Legacy attribute: DC)\n* `SECURED_LOAN_NO_AMOUNT` - Loan secured by a charge on real estate (without amount) (Legacy attribute: HY)\n* `SURETY_FOR_LOAN_NO_AMOUNT` - Surety for loan secured by a charge on real estate (without amount) (Legacy attribute: BY)\n* `CREDIT_CARD` - Credit card or credit card account (Legacy attribute: CC)\n* `CREDIT_CARD_REVOLVING` - Credit card or credit card account with revolving limit (Legacy attribute: CR)\n* `CREDIT_CURRENT_ACCOUNT` - Non-instalment loans and credits on current accounts (Legacy attribute: KG)\n* `FRAMEWORK_LOAN` - Master loan agreement with a financial institution (Legacy attribute: RK)\n* `LIQUIDATION_ACCOUNT` - Account in liquidation (Legacy attribute: KW)\n* `CREDIT_LINES_FREELANCERS` - Working capital credit lines for freelancers (Legacy attribute: K1)\n* `CREDIT_LINES_SMALL_BUSINESSES` - Working capital credit lines for self-employed/small business owners (Legacy attribute: K2)\n* `INVESTMENT_LOAN_FREELANCERS` - Capital investment loans for freelancers (Legacy attribute: K3)\n* `INVESTMENT_LOAN_SMALL_BUSINESSES` - Capital investment loans for self-employed/small business owners (Legacy attribute: K4)\n* `ACCOUNT_FREELANCERS` - Account for freelancers (Legacy attribute: K5)\n* `ACCOUNT_SMALL_BUSINESSES` - Account for self-employed/small business owners (Legacy attribute: K6)\n* `ABSOLUTE_GUARANTEE` - Absolute guarantee for businesses (Legacy attribute: K7)\n* `CURRENT_ACCOUNT_FREELANCERS` - Business current account (for freelancers) (Legacy attribute: M1)\n* `CURRENT_ACCOUNT_SMALL_BUSINESSES` - Business current account (for self-employed and small business owners) (Legacy attribute: M2)\n* `LEASING_FREELANCERS` - Leasing/hire purchase for business purposes (for freelancers) (Legacy attribute: M3)\n* `LEASING_SMALL_BUSINESSES` - Leasing/hire purchase for business purposes (for self-employed and small business owners) (Legacy attribute: M4)\n* `CREDIT_CARD_FREELANCERS` - Credit card for business purposes (for freelancers) (Legacy attribute: M5)\n* `CREDIT_CARD_SMALL_BUSINESSES` - Credit card for business purposes (for self-employed and small business owners) (Legacy attribute: M6)\n* `SECURED_INVESTMENT_CREDITS_FREELANCERS` - Investment credit secured by a land charge for business purposes (for freelancers) (Legacy attribute: M7)\n* `SECURED_INVESTMENT_CREDITS_SMALL_BUSINESSES` - Investment credit secured by a land charge for business purposes (for self-employed and small business owners) (Legacy attribute: M8)\n* `MASKED` - Anonymized / masked contract attribute (Legacy attribute: XX)",
             "x-extensible-enum": [
               "SECURED_INVESTMENT_CREDITS_FREELANCERS",
               "SECURED_LOAN",
               "SURETY_FOR_LOAN_NO_AMOUNT",
+              "CURRENT_ACCOUNT_SEIZURE_PROTECTION",
+              "CREDIT_CARD_FREELANCERS",
               "FORWARD_LOAN",
               "SECURED_LOAN_NO_AMOUNT",
               "BUILDING_SOCIETY_LOAN_SECURED",
+              "CREDIT_CURRENT_ACCOUNT",
+              "CURRENT_ACCOUNT_FREELANCERS",
               "UNSECURED_LOAN",
               "CREDIT_LINES_SMALL_BUSINESSES",
               "CREDIT_LINES_FREELANCERS",
               "MASKED",
+              "FRAMEWORK_LOAN",
               "ABSOLUTE_GUARANTEE",
               "CO_APPLICANT_LOAN_BULLET_MATURITY",
-              "ACCOUNT_FREELANCERS",
               "SURETY_FOR_LOAN_UNSECURED",
-              "ACCOUNT_SMALL_BUSINESSES",
               "INVESTMENT_LOAN_FREELANCERS",
               "INVESTMENT_LOAN_SMALL_BUSINESSES",
               "LEASING",
               "LEASING_SMALL_BUSINESSES",
               "SURETY_FOR_LOAN_SECURED",
               "LIQUIDATION_ACCOUNT",
+              "CURRENT_ACCOUNT_SMALL_BUSINESSES",
               "PERMANENT_ACCOUNT",
               "CREDIT_CARD",
+              "CREDIT_CARD_SMALL_BUSINESSES",
               "CURRENT_ACCOUNT",
               "CREDIT_CARD_REVOLVING",
               "LEASING_FREELANCERS",
               "UNSECURED_LOAN_BULLET_MATURITY",
               "SECURED_INVESTMENT_CREDITS_SMALL_BUSINESSES",
               "SURETY_FOR_LOAN_WITH_FINAL_MATURITY",
+              "BASIC_PAYMENT_ACCOUNT",
               "CO_APPLICANT_SECURED_LOAN",
-              "CO_APPLICANT_UNSECURED_LOAN"
-            ]
+              "CO_APPLICANT_UNSECURED_LOAN",
+              "ACCOUNT_FREELANCERS",
+              "ACCOUNT_SMALL_BUSINESSES"
+            ],
+            "example": "UNSECURED_LOAN"
           },
           "date": {
             "type": "string",
             "format": "date"
           },
           "reference": {
-            "type": "string",
-            "description": "referencenumber for the identification of own attributes - formerly: Kontonummer",
-            "example": "AZ14YXII-20"
+            "$ref": "#/components/schemas/Reference"
           },
           "amount": {
             "$ref": "#/components/schemas/Amount"
           },
           "rates": {
             "$ref": "#/components/schemas/Rates"
+          },
+          "loanAgreement": {
+            "$ref": "#/components/schemas/LoanAgreement"
           },
           "settled": {
             "type": "boolean",
@@ -901,12 +1235,11 @@
         "description": "Court Data of the customer",
         "properties": {
           "withDateOfBirth": {
-            "type": "boolean",
-            "description": "Indicates that the contract was reported to SCHUFA with the person's date of birth."
+            "$ref": "#/components/schemas/WithDateOfBirth"
           },
           "attributeName": {
             "type": "string",
-            "description": "Values:\n* `NO_SUBMISSION_OF_ASSETS_REPORT` - Claimant has not fulfilled his obligation to submit a declaration of assets (Legacy attribute: S1)\n* `ASSETS_UNSUITABLE_FOR_COLLECTION` - Satisfaction of creditors excluded according to the content of the list of assets (Legacy attribute: S2)\n* `DEBTOR_HAS_NOT_DEMONSTRATED_CREDIT_SATISFACTION` - Creditor satisfaction not proven within one month after submission of the statement of assets (Legacy attribute: S3)\n* `INSOLVENCY_REFUSED` - Insolvency proceedings rejected (Legacy attribute: IA)\n* `INSOLVENCY_INITIATED` - Insolvency proceedings initiated (Legacy attribute: IE)\n* `DISCHARGE_OF_RESIDUAL_DEBT_ANNOUNCEMENT` - Discharge of residual debt announced (Legacy attribute: RA)\n* `DISCHARGE_OF_RESIDUAL_DEBT_DENIAL` - Discharge of residual debt denied (Legacy attribute: RV)\n* `DISCHARGE_OF_RESIDUAL_DEBT_GRANTED` - Discharge of residual debt granted (Legacy attribute: RB)\n* `INSOLVENCY_CANCELLED` - Insolvency proceedings terminated (Legacy attribute: IS)\n        ",
+            "description": "Values:\n* `NO_SUBMISSION_OF_ASSETS_REPORT` - Claimant has not fulfilled his obligation to submit a declaration of assets (Legacy attribute: S1)\n* `ASSETS_UNSUITABLE_FOR_COLLECTION` - Satisfaction of creditors excluded according to the content of the list of assets (Legacy attribute: S2)\n* `DEBTOR_HAS_NOT_DEMONSTRATED_CREDIT_SATISFACTION` - Creditor satisfaction not proven within one month after submission of the statement of assets (Legacy attribute: S3)\n* `INSOLVENCY_REFUSED` - Insolvency proceedings rejected (Legacy attribute: IA)\n* `INSOLVENCY_INITIATED` - Insolvency proceedings initiated (Legacy attribute: IE)\n* `DISCHARGE_OF_RESIDUAL_DEBT_ANNOUNCEMENT` - Discharge of residual debt announced (Legacy attribute: RA)\n* `DISCHARGE_OF_RESIDUAL_DEBT_DENIAL` - Discharge of residual debt denied (Legacy attribute: RV)\n* `DISCHARGE_OF_RESIDUAL_DEBT_GRANTED` - Discharge of residual debt granted (Legacy attribute: RB)\n* `INSOLVENCY_CANCELLED` - Insolvency proceedings terminated (Legacy attribute: IS)",
             "x-extensible-enum": [
               "DEBTOR_HAS_NOT_DEMONSTRATED_CREDIT_SATISFACTION",
               "DISCHARGE_OF_RESIDUAL_DEBT_DENIAL",
@@ -917,7 +1250,8 @@
               "ASSETS_UNSUITABLE_FOR_COLLECTION",
               "INSOLVENCY_CANCELLED",
               "DISCHARGE_OF_RESIDUAL_DEBT_GRANTED"
-            ]
+            ],
+            "example": "NO_SUBMISSION_OF_ASSETS_REPORT"
           },
           "date": {
             "type": "string",
@@ -925,9 +1259,7 @@
             "description": "Date of the event"
           },
           "reference": {
-            "type": "string",
-            "description": "referencenumber for the identification of own attributes - formerly: Kontonummer",
-            "example": "AZ14YXII-20"
+            "$ref": "#/components/schemas/Reference"
           }
         },
         "required": [
@@ -939,11 +1271,10 @@
       },
       "CreditRatingInformation": {
         "type": "object",
+        "description": "This element describes a credit report.",
         "properties": {
           "reportId": {
-            "type": "string",
-            "description": "The reportId is a unique identification number for the order.",
-            "example": 1234567890
+            "$ref": "#/components/schemas/ReportId"
           },
           "personData": {
             "$ref": "#/components/schemas/PersonDataResponse"
@@ -973,20 +1304,13 @@
             }
           },
           "identificationReservations": {
-            "type": "array",
-            "description": "\nArray of extensible-enum.\nValues:\n* `NO_DATE_OF_BIRTH` - Indicates that the person provided does not have a date of birth in the database, which gives the identification a certain degree of uncertainty.\n* `DIFFERENT_PERSON_DATA` - Indicates whether the identity of the person is potentially questionable because the person data from the request does not exactly match the data in the database.\n* `DIFFERENT_ADDRESS_DATA` - Indicates that the address data of the person's main address differs between the request and the database.\n",
-            "items": {
-              "type": "string",
-              "description": "Values:\n* `NO_DATE_OF_BIRTH` - Indicates that the person provided does not have a date of birth in the database, which gives the identification a certain degree of uncertainty.\n* `DIFFERENT_PERSON_DATA` - Indicates whether the identity of the person is potentially questionable because the person data from the request does not exactly match the data in the database.\n* `DIFFERENT_ADDRESS_DATA` - Indicates that the address data of the person's main address differs between the request and the database.\n",
-              "x-extensible-enum": [
-                "NO_DATE_OF_BIRTH",
-                "DIFFERENT_PERSON_DATA",
-                "DIFFERENT_ADDRESS_DATA"
-              ]
-            }
+            "$ref": "#/components/schemas/IdentificationReservations"
           },
           "score": {
             "$ref": "#/components/schemas/Score"
+          },
+          "fraudInformation": {
+            "$ref": "#/components/schemas/FraudInformation"
           }
         },
         "required": [
@@ -996,10 +1320,154 @@
           "identificationReservations",
           "notes",
           "reportId"
-        ]
+        ],
+        "example": {
+          "reportId": "1234567890",
+          "personData": {
+            "firstName": "PETER",
+            "lastName": "MAIER",
+            "gender": "MALE",
+            "dateOfBirth": "1973-01-15",
+            "deceasedInformation": {
+              "deceased": true,
+              "dateOfDeath": "2015-01-15",
+              "deathCertificateId": "SATGAB2015-007"
+            },
+            "title": "Dr.",
+            "placeOfBirth": "WIESBADEN",
+            "addresses": {
+              "currentAddress": {
+                "streetWithNumber": "MAXIMILIANSTRA\u00dfe 20B",
+                "postalCode": "10625",
+                "city": "BERLIN",
+                "country": "DEU"
+              },
+              "previousAddress": {
+                "streetWithNumber": "SCHILLERSTRA\u00dfE 96",
+                "postalCode": "80539",
+                "city": "M\u00dcNCHEN",
+                "country": "DEU"
+              },
+              "secondaryAddresses": [
+                {
+                  "streetWithNumber": "EMSER STR. 11",
+                  "postalCode": "70372",
+                  "city": "STUTTGART",
+                  "country": "DEU"
+                }
+              ]
+            },
+            "identityCheckedById": true,
+            "schufaId": "EHB9SU3EZ1"
+          },
+          "courtData": [
+            {
+              "withDateOfBirth": true,
+              "attributeName": "NO_SUBMISSION_OF_ASSETS_REPORT",
+              "date": "2025-02-01",
+              "reference": "B1405R00407984814"
+            }
+          ],
+          "contracts": [
+            {
+              "withDateOfBirth": true,
+              "attributeName": "UNSECURED_LOAN",
+              "date": "2027-07-01",
+              "reference": "AZ14YXII-20",
+              "amount": {
+                "amount": 15000,
+                "currency": "EUR"
+              },
+              "rates": {
+                "type": "MONTHLY",
+                "number": 24
+              },
+              "settled": false,
+              "claim": {
+                "adjudication": true,
+                "currentAmount": {
+                  "amount": 750,
+                  "currency": "EUR"
+                },
+                "initialAmount": {
+                  "amount": 400,
+                  "currency": "EUR"
+                },
+                "balances": [
+                  {
+                    "amount": {
+                      "amount": 400,
+                      "currency": "EUR"
+                    },
+                    "date": "2025-05-01"
+                  },
+                  {
+                    "amount": {
+                      "amount": 750,
+                      "currency": "EUR"
+                    },
+                    "date": "2025-07-01"
+                  }
+                ],
+                "status": "OPEN"
+              }
+            }
+          ],
+          "enquiries": [
+            {
+              "withDateOfBirth": true,
+              "attributeName": "ENQUIRY_CURRENT_ACCOUNTS",
+              "date": "2025-07-01",
+              "reference": "AZ14YXII-22"
+            }
+          ],
+          "notes": [
+            {
+              "withDateOfBirth": true,
+              "attributeName": "NOTE",
+              "text": "FRUEHER MUELLER, PETER"
+            }
+          ],
+          "identificationReservations": [
+            "DIFFERENT_PERSON_DATA"
+          ],
+          "score": {
+            "description": "Score",
+            "status": "OK",
+            "details": {
+              "value": 1179,
+              "riskRate": 77.75,
+              "range": "F",
+              "text": "RATINGSTUFE F",
+              "infoText": [
+                "ES LIEGEN INFORMATIONEN ZU VERTRAGSWIDRIGEM VERHALTEN VOR",
+                "SCORE-ID 9R11-EB5S-QEFB-0OIQ-01"
+              ]
+            }
+          },
+          "fraudInformation": {
+            "resultType": "MATCH",
+            "matchId": "1234567"
+          }
+        }
+      },
+      "Reference": {
+        "type": "string",
+        "description": "referencenumber for the identification of own attributes - formerly: Kontonummer",
+        "example": "AZ14YXII-20"
+      },
+      "ReportId": {
+        "type": "string",
+        "description": "The reportId is a unique identification number for the order.",
+        "example": "1234567890"
+      },
+      "WithDateOfBirth": {
+        "type": "boolean",
+        "description": "Indicates that the contract was reported to SCHUFA with the person's date of birth."
       },
       "DeceasedInformation": {
         "type": "object",
+        "description": "Documents that the person has been reported as deceased.",
         "properties": {
           "deceased": {
             "type": "boolean",
@@ -1019,44 +1487,76 @@
           "deceased"
         ]
       },
+      "IdentificationReservations": {
+        "type": "array",
+        "description": "Array with reservations regarding the identity of the enquired customer.",
+        "items": {
+          "type": "string",
+          "description": "Values:\n* `NO_DATE_OF_BIRTH` - Indicates that the person provided does not have a date of birth in the database, which gives the identification a certain degree of uncertainty.\n* `DIFFERENT_PERSON_DATA` - Indicates whether the identity of the person is potentially questionable because the person data from the request does not exactly match the data in the database.\n* `DIFFERENT_ADDRESS_DATA` - Indicates that the address data of the person's main address differs between the request and the database.\n",
+          "x-extensible-enum": [
+            "NO_DATE_OF_BIRTH",
+            "DIFFERENT_PERSON_DATA",
+            "DIFFERENT_ADDRESS_DATA"
+          ],
+          "example": "DIFFERENT_PERSON_DATA"
+        }
+      },
       "Enquire": {
         "type": "object",
         "description": "Enquire about the customer",
         "properties": {
           "withDateOfBirth": {
-            "type": "boolean",
-            "description": "Indicates that the contract was reported to SCHUFA with the person's date of birth."
+            "$ref": "#/components/schemas/WithDateOfBirth"
           },
           "attributeName": {
             "type": "string",
-            "description": "Values:\n* `ENQUIRY_UNSECURED_LOANS` - Enquiry concerning unsecured building loans or loans not secured by a charge on real estate (Legacy attribute: AK)\n* `ENQUIRY_SECURED_LOANS` - Enquiry concerning loans secured by charge on real estate (Legacy attribute: AW)\n* `ENQUIRY_LEASING` - Enquiry concerning leasing/hire purchase (Legacy attribute: AL)\n* `ENQUIRY_PAYMENT_METHODS` - Enquiry concerning the offer of payment methods (Legacy attribute: ZV)\n* `ENQUIRY_COMMERCE` - Commercial enquiry concerning delivery of goods or services (Legacy attribute: AH)\n* `ENQUIRY_MAIL_ORDERS` - Enquiry of catalog companies concerning the delivery of goods and services (Legacy attribute: AV)\n* `ENQUIRY_SERVICES` - Enquiry concerning services (Legacy attribute: AD)\n* `ENQUIRY_COLLECTION` - Enquiry concerning collection if the preconditions of §31, section 2 BDSG for reporting the claim are fulfilled (Legacy attribute: AI)\n* `ENQUIRY_SERVICES_FINANCIAL` - Enquiry concerning financial services (Legacy attribute: AF)\n* `ENQUIRY_CONDITIONS_REAL_ESTATE_LOANS` - Enquiry concerning terms of real estate loans (Legacy attribute: KH)\n* `ENQUIRY_CONDITIONS_LOANS` - Enquiry concerning terms of loans (Legacy attribute: KK)\n* `ENQUIRY_FREELANCERS` - Enquiry concerning freelancers (Legacy attribute: A5)\n* `ENQUIRY_SMALL_BUSINESSES` - Enquiry concerning self-employed/small business owners (Legacy attribute: A6)\n* `ENQUIRY_SECURED_INVESTMENT_CREDITS_FREELANCERS` - Enquiry concerning investment credits secured by a land charge for business purposes (for freelancers) (Legacy attribute: B7)\n* `ENQUIRY_SECURED_INVESTMENT_CREDITS_SMALL_BUSINESSES` - Enquiry concerning investment credits secured by a land charge for business purposes (for self-employed and small business owners) (Legacy attribute: B8)\n* `ENQUIRY_GAMBLING` - Enquiry concerning gambling (Legacy attribute: AO)\n        ",
+            "description": "Values:\n* `ENQUIRY_UNSECURED_LOANS` - Enquiry concerning unsecured building loans or loans not secured by a charge on real estate (Legacy attribute: AK)\n* `ENQUIRY_SURETY_UNSECURED_LOAN` - Enquiry concerning surety for unsecured building society loan, loan not secured by a charge on real estate or leasing/hire purchase (Legacy attribute: AB)\n* `ENQUIRY_SECURED_LOANS` - Enquiry concerning loans secured by charge on real estate (Legacy attribute: AW)\n* `ENQUIRY_CURRENT_ACCOUNTS` - Enquiry concerning current accounts (Legacy attribute: AG)\n* `ENQUIRY_BASIC_ACCOUNT` - Enquiry concerning payment accounts with basic features (Legacy attribute: KB)\n* `ENQUIRY_SEIZURE_PROTECTION_ACCOUNT` - Enquiry concerning current accounts with seizure protection (Legacy attribute: KP)\n* `ENQUIRY_ENERGY` - Enquiry concerning energy contract or energyrelated service (legacy attribute: AE)\n* `ENQUIRY_CREDIT_CARDS` - Enquiry concerning credit cards (Legacy attribute: AC)\n* `ENQUIRY_LEASING` - Enquiry concerning leasing/hire purchase (Legacy attribute: AL)\n* `ENQUIRY_PAYMENT_METHODS` - Enquiry concerning the offer of payment methods (Legacy attribute: ZV)\n* `ENQUIRY_COMMERCE` - Commercial enquiry concerning delivery of goods or services (Legacy attribute: AH)\n* `ENQUIRY_MAIL_ORDERS` - Enquiry of catalog companies concerning the delivery of goods and services (Legacy attribute: AV)\n* `ENQUIRY_TELECOMMUNICATION` - Enquiry concerning telecommunication accounts (Legacy attribute: AT)\n* `ENQUIRY_SERVICES` - Enquiry concerning services (Legacy attribute: AD)\n* `ENQUIRY_COLLECTION` - Enquiry concerning collection if the preconditions of \u00a731, section 2 BDSG for reporting the claim are fulfilled (Legacy attribute: AI)\n* `ENQUIRY_SERVICES_FINANCIAL` - Enquiry concerning financial services (Legacy attribute: AF)\n* `ENQUIRY_CONDITIONS_REAL_ESTATE_LOANS` - Enquiry concerning terms of real estate loans (Legacy attribute: KH)\n* `ENQUIRY_CREDIT_CARDS_CREDIT_LINE` - Enquiry concerning credit cards with revolving credit line (Legacy attribute: AR)\n* `ENQUIRY_CONDITIONS_LOANS` - Enquiry concerning terms of loans (Legacy attribute: KK)\n* `ENQUIRY_TERMS_LEASING` - Enquiry concerning terms of leasing/hire purchase (Legacy attribute: KL)\n* `ENQUIRY_CREDIT_LINES_FREELANCERS` - Enquiry concerning working capital credit lines for freelancers (Legacy attribute: A1)\n* `ENQUIRY_CREDIT_LINES_SMALL_BUSINESSES` - Enquiry concerning working capital credit lines for self-employed/small business owners (Legacy attribute: A2)\n* `ENQUIRY_INVESTMENT_LOAN_FREELANCERS` - Enquiry concerning capital investment loans for freelancers (Legacy attribute: A3)\n* `ENQUIRY_INVESTMENT_LOAN_SMALL_BUSINESSES` - Enquiry concerning capital investment loans for self-employed/small business owners (Legacy attribute: A4)\n* `ENQUIRY_FREELANCERS` - Enquiry concerning freelancers (Legacy attribute: A5)\n* `ENQUIRY_SMALL_BUSINESSES` - Enquiry concerning self-employed/small business owners (Legacy attribute: A6)\n* `ENQUIRY_BUSINESS_GUARANTEES` - Enquiry concerning absolute guarantees for a business (Legacy attribute: A7)\n* `ENQUIRY_CURRENT_ACCOUNTS_FREELANCERS` - Enquiry concerning business current accounts (for freelancers) (Legacy attribute: B1)\n* `ENQUIRY_CURRENT_ACCOUNTS_SMALL_BUSINESSES` - Enquiry concerning business current accounts (for self-employed and small business owners) (Legacy attribute: B2)\n* `ENQUIRY_LEASING_FREELANCERS` - Enquiry concerning leasing/hire purchase for business purposes (for freelancers) (Legacy attribute: B3)\n* `ENQUIRY_LEASING_SMALL_BUSINESSES` - Enquiry concerning leasing/hire purchase for business purposes (for self-employed and small business owners) (Legacy attribute: B4)\n* `ENQUIRY_CREDIT_CARDS_FREELANCERS` - Enquiry concerning credit cards for business purposes (for freelancers) (Legacy attribute: B5)\n* `ENQUIRY_CREDIT_CARDS_SMALL_BUSINESSES` - Enquiry concerning credit cards for business purposes (for self-employed and small business owners) (Legacy attribute: B6)\n* `ENQUIRY_SECURED_INVESTMENT_CREDITS_FREELANCERS` - Enquiry concerning investment credits secured by a land charge for business purposes (for freelancers) (Legacy attribute: B7)\n* `ENQUIRY_SECURED_INVESTMENT_CREDITS_SMALL_BUSINESSES` - Enquiry concerning investment credits secured by a land charge for business purposes (for self-employed and small business owners) (Legacy attribute: B8)\n* `ENQUIRY_GAMBLING` - Enquiry concerning gambling (Legacy attribute: AO)",
             "x-extensible-enum": [
-              "ENQUIRY_MAIL_ORDERS",
-              "ENQUIRY_GAMBLING",
               "ENQUIRY_SECURED_LOANS",
+              "ENQUIRY_CREDIT_LINES_SMALL_BUSINESSES",
               "ENQUIRY_UNSECURED_LOANS",
               "ENQUIRY_CONDITIONS_REAL_ESTATE_LOANS",
               "ENQUIRY_LEASING",
-              "ENQUIRY_CONDITIONS_LOANS",
-              "ENQUIRY_FREELANCERS",
+              "ENQUIRY_CREDIT_CARDS_FREELANCERS",
+              "ENQUIRY_SEIZURE_PROTECTION_ACCOUNT",
+              "ENQUIRY_CREDIT_CARDS",
+              "ENQUIRY_CURRENT_ACCOUNTS",
               "ENQUIRY_SECURED_INVESTMENT_CREDITS_FREELANCERS",
-              "ENQUIRY_SERVICES",
+              "ENQUIRY_INVESTMENT_LOAN_SMALL_BUSINESSES",
+              "ENQUIRY_CREDIT_CARDS_SMALL_BUSINESSES",
+              "ENQUIRY_CREDIT_LINES_FREELANCERS",
+              "ENQUIRY_COMMERCE",
+              "ENQUIRY_SECURED_INVESTMENT_CREDITS_SMALL_BUSINESSES",
+              "ENQUIRY_CURRENT_ACCOUNTS_FREELANCERS",
+              "ENQUIRY_SURETY_UNSECURED_LOAN",
+              "ENQUIRY_LEASING_SMALL_BUSINESSES",
+              "ENQUIRY_CURRENT_ACCOUNTS_SMALL_BUSINESSES",
+              "ENQUIRY_INVESTMENT_LOAN_FREELANCERS",
+              "ENQUIRY_CONDITIONS_LOANS",
+              "ENQUIRY_TERMS_LEASING",
+              "ENQUIRY_CREDIT_CARDS_CREDIT_LINE",
+              "ENQUIRY_BASIC_ACCOUNT",
               "ENQUIRY_COLLECTION",
+              "ENQUIRY_LEASING_FREELANCERS",
+              "ENQUIRY_BUSINESS_GUARANTEES",
+              "ENQUIRY_MAIL_ORDERS",
+              "ENQUIRY_GAMBLING",
+              "ENQUIRY_FREELANCERS",
+              "ENQUIRY_SERVICES",
               "ENQUIRY_SMALL_BUSINESSES",
               "ENQUIRY_PAYMENT_METHODS",
               "ENQUIRY_SERVICES_FINANCIAL",
-              "ENQUIRY_COMMERCE",
-              "ENQUIRY_SECURED_INVESTMENT_CREDITS_SMALL_BUSINESSES"
-            ]
+              "ENQUIRY_TELECOMMUNICATION",
+              "ENQUIRY_ENERGY"
+            ],
+            "example": "ENQUIRY_CURRENT_ACCOUNTS"
           },
           "date": {
             "type": "string",
             "format": "date"
           },
           "reference": {
-            "type": "string",
-            "description": "referencenumber for the identification of own attributes - formerly: Kontonummer",
-            "example": "AZ14YXII-20"
+            "$ref": "#/components/schemas/Reference"
           }
         },
         "required": [
@@ -1065,26 +1565,76 @@
           "withDateOfBirth"
         ]
       },
+      "FraudInformation": {
+        "type": "object",
+        "description": "This element provides information whether the requested person is known in the context of fraud prevention.",
+        "properties": {
+          "resultType": {
+            "type": "string",
+            "x-extensible-enum": [
+              "MATCH",
+              "NO_MATCH",
+              "RESULT_NOT_AVAILABLE"
+            ],
+            "example": "MATCH"
+          },
+          "matchId": {
+            "type": "string",
+            "description": "Reference to a FraudPool hit list that the FraudManager can review. The element is only filled if there is a match.",
+            "example": "1234567"
+          }
+        },
+        "required": [
+          "resultType"
+        ]
+      },
+      "LoanAgreement": {
+        "type": "object",
+        "description": "Information on a loan agreement between a consumer and a credit institution",
+        "properties": {
+          "attributeName": {
+            "type": "string",
+            "description": "Values:\n* `CREDIT_CURRENT_ACCOUNT` - Non-instalment loans and credits on current accounts (Legacy attribute: KG)",
+            "x-extensible-enum": [
+              "CREDIT_CURRENT_ACCOUNT"
+            ],
+            "example": "CREDIT_CURRENT_ACCOUNT"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of the agreement",
+            "example": "2024-05-23"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/Amount"
+          }
+        },
+        "required": [
+          "amount",
+          "attributeName",
+          "date"
+        ]
+      },
       "Note": {
         "type": "object",
         "description": "Note about the customer",
         "properties": {
           "withDateOfBirth": {
-            "type": "boolean",
-            "description": "Indicates that the contract was reported to SCHUFA with the person's date of birth."
+            "$ref": "#/components/schemas/WithDateOfBirth"
           },
           "attributeName": {
             "type": "string",
-            "description": "Values:\n* `NOTE` - The note is a freely formulated comment (Legacy attribute: H3)\n* `SELF_REPRESENTATION` - The self-representation of a consumer refers to the registered data on this consumer. It includes the consumer's counterstatement within the meaning of the BDSG. (Legacy attribute: H5)\n* `SECONDARY_RESIDENCE` - Postal code/city/street + house number of second residence (Legacy attribute: 2W)\n        ",
+            "description": "Values:\n* `NOTE` - The note is a freely formulated comment (Legacy attribute: H3)\n* `SELF_REPRESENTATION` - The self-representation of a consumer refers to the registered data on this consumer. It includes the consumer's counterstatement within the meaning of the BDSG. (Legacy attribute: H5)",
             "x-extensible-enum": [
               "SELF_REPRESENTATION",
-              "NOTE",
-              "SECONDARY_RESIDENCE"
-            ]
+              "NOTE"
+            ],
+            "example": "NOTE"
           },
           "text": {
             "type": "string",
-            "example": "70372/STUTTGART/EMSER STR. 11"
+            "example": "FRUEHER MUELLER, PETER"
           }
         },
         "required": [
@@ -1095,6 +1645,7 @@
       },
       "PersonDataResponse": {
         "type": "object",
+        "description": "This element contains the customer data known to SCHUFA.",
         "properties": {
           "firstName": {
             "type": "string",
@@ -1117,7 +1668,6 @@
           "dateOfBirth": {
             "type": "string",
             "format": "date",
-            "description": "Only filled if the date of birth is known. Omit field if unknown.",
             "example": "1973-01-15"
           },
           "deceasedInformation": {
@@ -1132,7 +1682,11 @@
             "example": "WIESBADEN"
           },
           "addresses": {
-            "$ref": "#/components/schemas/PersonDataAddresses"
+            "$ref": "#/components/schemas/PersonDataAddressesResponse"
+          },
+          "identityCheckedById": {
+            "type": "boolean",
+            "example": true
           },
           "schufaId": {
             "type": "string",
@@ -1171,6 +1725,7 @@
       },
       "Score": {
         "type": "object",
+        "description": "Score information is transmitted via this element.",
         "properties": {
           "description": {
             "type": "string",
@@ -1183,7 +1738,8 @@
               "OK",
               "NO_SCORE_AVAILABLE",
               "ERROR"
-            ]
+            ],
+            "example": "OK"
           },
           "details": {
             "$ref": "#/components/schemas/ScoreDetails"
@@ -1192,6 +1748,7 @@
       },
       "ScoreDetails": {
         "type": "object",
+        "description": "Detailed information on the score.",
         "properties": {
           "value": {
             "type": "integer",
@@ -1217,27 +1774,33 @@
           },
           "infoText": {
             "type": "array",
+            "description": "Score info texts can contain further information on a score calculation or represent the exclusive scoring information.",
+            "example": [
+              "ES LIEGEN INFORMATIONEN ZU VERTRAGSWIDRIGEM VERHALTEN VOR",
+              "SCORE-ID 9R11-EB5S-QEFB-0OIQ-01"
+            ],
             "items": {
-              "example": "THERE ARE MISSUSEATTRIBUTES OR SALDO AFTER TITLE"
+              "type": "string",
+              "example": "ES LIEGEN INFORMATIONEN ZU VERTRAGSWIDRIGEM VERHALTEN VOR"
             }
           }
         }
       },
       "EnquiryInProcessing": {
         "type": "object",
+        "description": "This element describes the response if manual processing of the enquiry is necessary.",
         "properties": {
           "message": {
-            "type": "string"
+            "type": "string",
+            "example": "Manual processing of the enquiry is necessary"
           },
           "reportId": {
-            "type": "string",
-            "description": "The reportId is a unique identification number for the order.",
-            "example": "08154711"
+            "$ref": "#/components/schemas/ReportId"
           },
           "href": {
             "type": "string",
             "description": "URL that can be used to retrieve the result of manual processing.",
-            "example": "https://api.hub.schufa.de/credit-report/manual-processing/08154711"
+            "example": "https://api.schufa.de/credit-report/manual-processing/08154711"
           }
         },
         "required": [
@@ -1246,42 +1809,52 @@
           "reportId"
         ]
       },
-      "OpenApiProblemDetail": {
+      "ProblemDetail": {
         "type": "object",
+        "description": "Error response message",
         "properties": {
           "type": {
             "type": "string",
-            "format": "uri",
             "example": "about:blank"
+          },
+          "title": {
+            "type": "string",
+            "example": "Constraint Violation"
           },
           "status": {
             "type": "integer",
             "format": "int32",
             "example": 400
           },
-          "title": {
-            "type": "string"
-          },
           "detail": {
-            "type": "string"
+            "type": "string",
+            "example": "Your request did not validate"
           },
           "instance": {
-            "type": "string"
+            "type": "string",
+            "example": "/standard"
           },
           "requestId": {
             "type": "string",
-            "format": "uri"
+            "example": "3ffa5947-cb2e-4877-995f-ade9a635ae0a/restapis"
           },
           "violations": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Violation"
-            }
+            },
+            "example": [
+              {
+                "field": "personData.firstName",
+                "message": "must not be null"
+              }
+            ]
           }
         }
       },
       "Violation": {
         "type": "object",
+        "description": "Tells json path where violations accured with the violation explained under message",
         "properties": {
           "field": {
             "type": "string"
@@ -1296,10 +1869,231 @@
         ]
       }
     },
+    "requestBodies": {
+      "CreditRatingRequestBody": {
+        "description": "Request body for a report on a customer.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreditRatingRequest"
+            }
+          }
+        },
+        "required": true
+      }
+    },
+    "responses": {
+      "200_CreditReport": {
+        "description": "Result of a credit report",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreditRatingInformation"
+            }
+          }
+        }
+      },
+      "202_ManualProcessing": {
+        "description": "Result if report could not be created because manual processing is necessary.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EnquiryInProcessing"
+            },
+            "example": {
+              "message": "Manual processing of the enquiry is necessary",
+              "reportId": "08154711",
+              "href": "https://api.schufa.de/credit-report/manual-processing/08154711"
+            }
+          }
+        }
+      },
+      "202_ProcessingNotFinished": {
+        "description": "Result if manual processing has not yet been finished.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EnquiryInProcessing"
+            },
+            "examples": {
+              "ProcessingNotFinished": {
+                "summary": "Processing not finished",
+                "value": {
+                  "message": "Manual processing not yet finished.",
+                  "reportId": "08154711",
+                  "href": "https://api.schufa.de/credit-report/manual-processing/08154711"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400_BadRequest": {
+        "description": "The request was invalid. Detail information on the error are provided in the response violations message field.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetail"
+            },
+            "example": {
+              "type": "about:blank",
+              "title": "Constraint Violation",
+              "status": 400,
+              "detail": "Your request did not validate",
+              "instance": "/checks",
+              "requestId": "45d7df93-7788-41c5-b0b4-380985bcff62/restapis",
+              "violations": [
+                {
+                  "field": "personData.dateOfBirth",
+                  "message": "Invalid date of birth. Null or age between 7 and 130."
+                }
+              ]
+            }
+          }
+        }
+      },
+      "401_Unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetail"
+            },
+            "example": {
+              "title": "Unauthorized",
+              "status": 401,
+              "detail": "The token is null."
+            }
+          }
+        }
+      },
+      "403_Forbidden": {
+        "description": "Forbidden",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetail"
+            },
+            "example": {
+              "type": "about:blank",
+              "title": "Forbidden",
+              "status": 403,
+              "detail": "Access Denied",
+              "instance": "/mail-orders",
+              "requestId": "40376e85-2c60-4dd7-a552-93c6ce350382/restapis"
+            }
+          }
+        }
+      },
+      "404_NotFound": {
+        "description": "The request was valid, but the requested Person could not be uniquely identified in the Schufa database.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetail"
+            },
+            "example": {
+              "type": "about:blank",
+              "title": "Not Found",
+              "status": 404,
+              "detail": "Person was not found in Schufa database",
+              "instance": "/checks",
+              "requestId": "a2652cd2-862f-4c24-9363-d9eda483402c/restapis"
+            }
+          }
+        }
+      },
+      "404_ReportNotFound": {
+        "description": "A report for the transmitted reportid does not exist or has already been retrieved.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetail"
+            },
+            "example": {
+              "type": "about:blank",
+              "title": "Not Found",
+              "status": 404,
+              "instance": "/manual-processing/84137054",
+              "requestId": "5cdb03bd-c6c0-4997-8810-07647973f725/restapis"
+            }
+          }
+        }
+      },
+      "422_UnprocessableEntity": {
+        "description": "Unprocessable Entity",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetail"
+            },
+            "example": {
+              "type": "about:blank",
+              "title": "Unprocessable Entity",
+              "status": 422,
+              "detail": "Automated retrieval of the product for this person not possible. Manual processing is not requested by you and therefore not proceeded."
+            }
+          }
+        }
+      },
+      "422_ReportUnprocessable": {
+        "description": "Report cannot be provided",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetail"
+            },
+            "example": {
+              "type": "about:blank",
+              "title": "Unprocessable Entity",
+              "status": 422,
+              "detail": "Report cannot be provided online. Further information can only be obtained from SCHUFA by phone.",
+              "instance": "/manual-processing/87647759",
+              "requestId": "28f3595a-6c5e-439f-ae4c-521aadb123be/restapis"
+            }
+          }
+        }
+      },
+      "500_InternalServerError": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProblemDetail"
+            },
+            "example": {
+              "title": "Internal Server Error",
+              "status": 500,
+              "requestId": "89aab92e-109c-42e2-b9g9-9f38f6dec444"
+            }
+          }
+        }
+      }
+    },
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+      "vptest": {
+        "type": "oauth2",
+        "description": "The security scheme for use in the SCHUFA VP Test environment.",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://auth.api.sandbox.schufa.de/token",
+            "scopes": {
+              "default": ""
+            }
+          }
+        }
+      },
+      "production": {
+        "type": "oauth2",
+        "description": "The security scheme for use in the SCHUFA Production environment.",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://auth.api.schufa.de/token",
+            "scopes": {
+              "default": ""
+            }
+          }
+        }
       }
     }
   }

@@ -113,7 +113,7 @@ A new cert is bound to your client in an overnight batch (see the warning above)
 curl -sS -m 25 -o /dev/null -w "%{http_code}\n" \
   --cert SCHUFA-Test.crt --key PrivKey-Test-unencrypted.pem \
   -d "grant_type=client_credentials&scope=hub-api-products&client_id=<CLIENT_ID>" \
-  https://auth.hubsandbox.schufa.de/auth/realms/hub/protocol/openid-connect/token
+  https://auth.api.sandbox.schufa.de/token/auth/realms/hub/protocol/openid-connect/token
 # PROD: swap the cert/key, use the prod client_id, and host https://auth.hub.schufa.de
 ```
 

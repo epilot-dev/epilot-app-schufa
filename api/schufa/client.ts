@@ -26,6 +26,7 @@ export const createClient = () => {
 
 	apiClient.defaults.headers.common = {
 		...(apiClient.defaults.headers.common ?? {}),
+		"User-Agent": "epilot-app-schufa",
 	};
 
 	return apiClient;

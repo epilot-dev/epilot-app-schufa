@@ -46,7 +46,7 @@ export async function useSchufaAuthTokenOrThrow(client_id: string) {
 		const config = useSchufaConfig();
 
 		logger.info("requesting SCHUFA auth token", {
-			authUrl: config.baseAuthUrl,
+			authUrl: config.tokenUrl,
 			client_id,
 			cert: describePem(config.secret.cert),
 			key: describePem(config.secret.key),
@@ -55,44 +55,41 @@ export async function useSchufaAuthTokenOrThrow(client_id: string) {
 		const postData = new URLSearchParams({
 			client_id,
 			grant_type: "client_credentials",
-			scope: "hub-api-products",
+			scope: "default",
 		}).toString();
 
 		const options: https.RequestOptions = {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded",
+				"user-agent": "epilot-app-schufa",
 			},
 			cert: config.secret.cert,
 			key: config.secret.key,
 		};
 
 		const response: HttpResponse = await new Promise((resolve, reject) => {
-			const req = https.request(
-				`${config.baseAuthUrl}/auth/realms/hub/protocol/openid-connect/token`,
-				options,
-				(res) => {
-					let data = "";
-					// biome-ignore lint/suspicious/noAssignInExpressions: yolo
-					res.on("data", (chunk) => (data += chunk));
-					res.on("end", () => {
-						const status = res.statusCode ?? 0;
-						resolve({
-							status,
-							ok: status >= 200 && status < 300,
-							body: data,
-							headers: res.headers,
-							json: () => Promise.resolve(JSON.parse(data || "{}")),
-						});
+			const req = https.request(`${config.tokenUrl}`, options, (res) => {
+				let data = "";
+				// biome-ignore lint/suspicious/noAssignInExpressions: yolo
+				res.on("data", (chunk) => (data += chunk));
+				res.on("end", () => {
+					const status = res.statusCode ?? 0;
+					resolve({
+						status,
+						ok: status >= 200 && status < 300,
+						body: data,
+						headers: res.headers,
+						json: () => Promise.resolve(JSON.parse(data || "{}")),
 					});
-				},
-			);
+				});
+			});
 
 			req.on("error", (err) => {
 				// genuine transport failure (DNS, TLS handshake, connection reset)
 				// — distinct from SCHUFA answering with a non-2xx below.
 				logger.error("transport error contacting SCHUFA auth endpoint", {
-					authUrl: config.baseAuthUrl,
+					authUrl: config.tokenUrl,
 					code: (err as NodeJS.ErrnoException).code,
 					message: err.message,
 				});

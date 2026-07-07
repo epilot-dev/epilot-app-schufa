@@ -14,7 +14,7 @@
 		"typecheck": "tsc --noEmit",
 		"openapi": "openapi read openapi.yml --json > api/openapi.json",
 		"typegen": "openapi typegen --backend openapi.yml > api/openapi.d.ts",
-		"schufa-typegen": "openapi typegen api/schufa/schufa.openapi.json --client -b '/* eslint-disable */' > api/schufa/schufa.d.ts",
+		"schufa-typegen": "openapi typegen api/schufa/openapi.json --client -b '/* eslint-disable */' > api/schufa/schufa.d.ts",
 		"lint": "biome check",
 		"lint:fix": "biome check --fix"
 	},

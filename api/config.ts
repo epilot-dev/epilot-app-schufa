@@ -7,8 +7,8 @@ export const APPS_REQUESTS_SLACK_WEBHOOK_CHANNEL = process.env
 export const useSchufaConfig = () => {
 	if (Resource.App.stage.startsWith("prod")) {
 		return {
-			baseAuthUrl: "https://auth.hub.schufa.de",
-			baseEnergyUrl: "https://api.hub.schufa.de/credit-report",
+			tokenUrl: "https://auth.api.schufa.de/token",
+			baseEnergyUrl: "https://api.schufa.de/credit-report",
 			secret: {
 				cert: Buffer.from(Resource.ProdSchufaCert.value, "base64").toString(
 					"utf8",
@@ -21,8 +21,8 @@ export const useSchufaConfig = () => {
 	}
 
 	return {
-		baseAuthUrl: "https://auth.hubsandbox.schufa.de",
-		baseEnergyUrl: "https://api.hubsandbox.schufa.de/credit-report",
+		tokenUrl: "https://auth.api.sandbox.schufa.de/token",
+		baseEnergyUrl: "https://api.sandbox.schufa.de/credit-report",
 		secret: {
 			cert: Buffer.from(Resource.TestSchufaCert.value, "base64").toString(
 				"utf8",
