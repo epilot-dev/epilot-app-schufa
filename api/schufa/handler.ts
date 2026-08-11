@@ -41,9 +41,20 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 		);
 	}
 
+	// the automation editor saves the per-automation credential selection
+	// (client_id_key) on the action config — app_options only carries the
+	// install-level options, so merge the key in before resolving
+	const app_options = {
+		...c.request.requestBody.data.app_options,
+		client_id_key:
+			c.request.requestBody.data.app_options.client_id_key ??
+			c.request.requestBody.data.action_config?.custom_action_config
+				?.client_id_key,
+	};
+
 	try {
 		const contact = findContactEntity(c.request.requestBody.data.entity);
-		logger.info("contact entity found", { contact: sanitizeContact(contact) });
+		logger.info("contact entity", { contact: sanitizeContact(contact), entity: c.request.requestBody.data.entity });
 
 		if (!contact) {
 			return replyJSON({
@@ -59,7 +70,7 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 		}
 
 		const schufa_score = await getCreditScoreForUser({
-			app_options: c.request.requestBody.data.app_options,
+			app_options,
 			contact,
 		});
 
@@ -96,7 +107,7 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 			await startAsyncReportProcessing({
 				epilotToken: access_token,
 				contact,
-				clientId: resolveClientId(c.request.requestBody.data.app_options),
+				clientId: resolveClientId(app_options),
 				reportId: schufa_score.reportId,
 			});
 

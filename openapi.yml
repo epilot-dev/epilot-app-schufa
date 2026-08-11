@@ -107,6 +107,23 @@ components:
                           a single `client_ids` entry exists, that entry is used; otherwise the
                           legacy `client_id` is used as a last resort.
                         example: "01HZ..."
+                  action_config:
+                    type: object
+                    description: |
+                      The automation action's own config, forwarded by the automation worker.
+                      The automation editor saves per-automation settings (like which client_ids
+                      entry to use) under `custom_action_config` here — NOT in `app_options`,
+                      which only carries install-level options.
+                    additionalProperties: true
+                    properties:
+                      custom_action_config:
+                        type: object
+                        additionalProperties: true
+                        properties:
+                          client_id_key:
+                            type: string
+                            description: Id of the `client_ids` entry selected for this automation.
+                            example: "01HZ..."
                   entity:
                     type:: object
                     additionalProperties: true

@@ -13,9 +13,9 @@
 	"author": "epilot GmbH",
 	"license": "MIT",
 	"dependencies": {
-		"@aws-lambda-powertools/logger": "^2.24.1",
+		"@aws-lambda-powertools/logger": "^2.34.0",
 		"@epilot/app-sdk": "^0.0.4",
-		"@epilot/entity-client": "^6.0.1",
+		"@epilot/entity-client": "^7.3.0",
 		"axios": "^1.10.0",
 		"http-errors": "^2.0.0",
 		"nanoid": "^5.1.5",

@@ -849,6 +849,96 @@ describe("SchufaService", () => {
 			expect(contact_entity).toBeDefined();
 		});
 
+		it("should find the contact from an order without a customer attribute via billing_contact", () => {
+			// given: journey orders may relate the contact via billing_contact
+			// instead of customer
+			const order = {
+				_schema: "order",
+				_id: "cce72127-ffe8-44df-abf0-62418ca1ad0f",
+				_org: "739224",
+				status: "placed",
+				billing_contact: [
+					{
+						$relation: {
+							entity_id: "c4aa23e8-6193-4165-a479-d851704ba856",
+							_tags: ["customer"],
+						},
+						_id: "c4aa23e8-6193-4165-a479-d851704ba856",
+						_schema: "contact",
+						first_name: "Jane",
+						last_name: "Doe",
+					},
+				],
+			};
+
+			// when
+			const contact_entity = findContactEntity(order);
+
+			// then
+			expect(contact_entity).toBeDefined();
+			expect(contact_entity?._id).toBe("c4aa23e8-6193-4165-a479-d851704ba856");
+		});
+
+		it("should find the contact when the entity is a contact itself", () => {
+			// given
+			const contact = {
+				_schema: "contact",
+				_id: "c4aa23e8-6193-4165-a479-d851704ba856",
+				_org: "739224",
+				first_name: "Jane",
+				last_name: "Doe",
+			};
+
+			// when
+			const contact_entity = findContactEntity(contact);
+
+			// then
+			expect(contact_entity).toBe(contact);
+		});
+
+		it("should find the contact via a custom relation attribute", () => {
+			// given: orgs can model the relation on any attribute
+			const order = {
+				_schema: "order",
+				_id: "cce72127-ffe8-44df-abf0-62418ca1ad0f",
+				_org: "739224",
+				vertragspartner: [
+					{
+						_id: "c4aa23e8-6193-4165-a479-d851704ba856",
+						_schema: "contact",
+						first_name: "Jane",
+						last_name: "Doe",
+					},
+				],
+			};
+
+			// when
+			const contact_entity = findContactEntity(order);
+
+			// then
+			expect(contact_entity?._id).toBe("c4aa23e8-6193-4165-a479-d851704ba856");
+		});
+
+		it("should ignore non-hydrated relation stubs", () => {
+			// given: without hydration, relations stay as $relation refs
+			const order = {
+				_schema: "order",
+				_id: "cce72127-ffe8-44df-abf0-62418ca1ad0f",
+				_org: "739224",
+				billing_contact: {
+					$relation: [
+						{ entity_id: "c4aa23e8-6193-4165-a479-d851704ba856" },
+					],
+				},
+			};
+
+			// when
+			const contact_entity = findContactEntity(order);
+
+			// then
+			expect(contact_entity).toBeUndefined();
+		});
+
 		it("should return undefined for missing contacts from an opportunity", () => {
 			// given
 			const opportunity = {

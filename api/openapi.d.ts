@@ -72,6 +72,25 @@ declare namespace Components {
                      */
                     client_id_key?: string;
                 };
+                /**
+                 * The automation action's own config, forwarded by the automation worker.
+                 * The automation editor saves per-automation settings (like which client_ids
+                 * entry to use) under `custom_action_config` here — NOT in `app_options`,
+                 * which only carries install-level options.
+                 *
+                 */
+                action_config?: {
+                    [name: string]: any;
+                    custom_action_config?: {
+                        [name: string]: any;
+                        /**
+                         * Id of the `client_ids` entry selected for this automation.
+                         * example:
+                         * 01HZ...
+                         */
+                        client_id_key?: string;
+                    };
+                };
                 entity: {
                     [name: string]: any;
                 };

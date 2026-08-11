@@ -27,7 +27,10 @@ export async function handler(input: Input) {
 	const client = getSchufaClient();
 
 	try {
-		const { access_token } = await useSchufaAuthTokenOrThrow(input.clientId);
+		const { access_token } = await useSchufaAuthTokenOrThrow({
+			client_id: input.clientId,
+			resolved_via: "async_processing_payload",
+		});
 		const result = await client.get(`/manual-processing/${input.reportId}`, {
 			headers: {
 				Accept: "application/json",

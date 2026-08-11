@@ -46,25 +46,57 @@ type AppOptions =
  * Throws when none of the above resolves — that's a misconfigured automation
  * and is more useful as a 400 than a silent miscall to Schufa.
  */
-export function resolveClientId(app_options: AppOptions): string {
+export interface ResolvedClientEntry {
+	client_id: string;
+	/** human-readable label of the `client_ids` entry, when resolved from one */
+	option_name?: string;
+	resolved_via: "client_id_key" | "single_entry" | "legacy_client_id";
+}
+
+export function resolveClientEntry(
+	app_options: AppOptions,
+): ResolvedClientEntry {
 	const entries = Array.isArray(app_options.client_ids)
 		? app_options.client_ids
 		: [];
 
 	if (app_options.client_id_key) {
 		const match = entries.find((e) => e?.id === app_options.client_id_key);
-		if (match?.client_id) return match.client_id;
+		if (match?.client_id) {
+			return {
+				client_id: match.client_id,
+				option_name: match.name,
+				resolved_via: "client_id_key",
+			};
+		}
 	}
 
 	if (entries.length === 1 && entries[0]?.client_id) {
-		return entries[0].client_id;
+		return {
+			client_id: entries[0].client_id,
+			option_name: entries[0].name,
+			resolved_via: "single_entry",
+		};
 	}
 
 	if (
 		typeof app_options.client_id === "string" &&
 		app_options.client_id.length > 0
 	) {
-		return app_options.client_id;
+		if (entries.length > 0) {
+			// modern credentials are configured but didn't resolve — the legacy
+			// value is likely stale/wrong, so make this visible
+			logger.warn(
+				"falling back to legacy client_id despite configured client_ids",
+				{
+					has_key: !!app_options.client_id_key,
+					client_id_key: app_options.client_id_key,
+					entries: entries.map((e) => ({ id: e?.id, name: e?.name })),
+				},
+			);
+		}
+
+		return { client_id: app_options.client_id, resolved_via: "legacy_client_id" };
 	}
 
 	throw new VisibleError(
@@ -72,6 +104,30 @@ export function resolveClientId(app_options: AppOptions): string {
 		"NO_CLIENT_ID",
 		400,
 		{ has_key: !!app_options.client_id_key, entries: entries.length },
+	);
+}
+
+export function resolveClientId(app_options: AppOptions): string {
+	return resolveClientEntry(app_options).client_id;
+}
+
+// relation attributes that may hold the contact, in priority order.
+// which one is used depends on the org's schema config, e.g. orders
+// created via journeys often relate the contact via `billing_contact`
+// instead of `customer`
+const CONTACT_RELATION_ATTRIBUTES = [
+	"customer",
+	"billing_contact",
+	"mapped_entities",
+];
+
+// only single contacts supported initially. pick the first contact
+function findRelatedContact(value: unknown): EntityItem | undefined {
+	const items = Array.isArray(value) ? value : [value];
+
+	return items.find(
+		(item): item is EntityItem =>
+			isEntityItem(item) && item._schema === "contact",
 	);
 }
 
@@ -83,28 +139,20 @@ export function findContactEntity(entity: SchufaPayload) {
 
 	if (!isEntityItem(entity)) return undefined;
 
-	if (entity._schema === "opportunity") {
-		return entity?.customer?.find(
-			(entity: EntityItem) => entity?._schema === "contact",
-		) as EntityItem | undefined;
-	}
-
-	if (entity._schema === "order") {
-		return entity?.customer?.find(
-			(entity: EntityItem) => entity?._schema === "contact",
-		) as EntityItem | undefined;
-	}
-
 	if (entity._schema === "contact") return entity;
 
-	if (entity._schema === "submission") {
-		// only single contacts supported initially. pick the first contact
-		return entity?.mapped_entities?.find(
-			(entity: EntityItem) => entity?._schema === "contact",
-		) as EntityItem;
+	for (const attribute of CONTACT_RELATION_ATTRIBUTES) {
+		const contact = findRelatedContact(entity[attribute]);
+		if (contact) return contact;
 	}
 
-	// other use cases not supported (yet)
+	// optimistic fallback: orgs may relate the contact via a custom
+	// attribute — scan the whole payload for any hydrated contact
+	for (const value of Object.values(entity)) {
+		const contact = findRelatedContact(value);
+		if (contact) return contact;
+	}
+
 	return undefined;
 }
 
@@ -142,7 +190,7 @@ export async function getCreditScoreForUser(params: {
 	}
 
 	const { access_token } = await useSchufaAuthTokenOrThrow(
-		resolveClientId(params.app_options),
+		resolveClientEntry(params.app_options),
 	);
 
 	const mapping_result = mapToPersonalDataOrThrow(params.contact);
@@ -170,8 +218,13 @@ export async function getCreditScoreForUser(params: {
 			},
 		);
 
+		// never log result.data — it contains person data and the credit score
 		logger.info("SCHUFA data fetched successfully", {
-			information: result.data,
+			org_id: params.contact._org,
+			contact_id: params.contact._id,
+			status: result.status,
+			report_id: result.data?.reportId,
+			has_score: !!(result.data as CreditRatingInformation)?.score,
 		});
 
 		if (result.status === 200) {
