@@ -926,9 +926,7 @@ describe("SchufaService", () => {
 				_id: "cce72127-ffe8-44df-abf0-62418ca1ad0f",
 				_org: "739224",
 				billing_contact: {
-					$relation: [
-						{ entity_id: "c4aa23e8-6193-4165-a479-d851704ba856" },
-					],
+					$relation: [{ entity_id: "c4aa23e8-6193-4165-a479-d851704ba856" }],
 				},
 			};
 

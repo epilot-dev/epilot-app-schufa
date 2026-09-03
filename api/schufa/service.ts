@@ -96,7 +96,10 @@ export function resolveClientEntry(
 			);
 		}
 
-		return { client_id: app_options.client_id, resolved_via: "legacy_client_id" };
+		return {
+			client_id: app_options.client_id,
+			resolved_via: "legacy_client_id",
+		};
 	}
 
 	throw new VisibleError(

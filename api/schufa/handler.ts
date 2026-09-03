@@ -54,7 +54,10 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 
 	try {
 		const contact = findContactEntity(c.request.requestBody.data.entity);
-		logger.info("contact entity", { contact: sanitizeContact(contact), entity: c.request.requestBody.data.entity });
+		logger.info("contact entity", {
+			contact: sanitizeContact(contact),
+			entity: c.request.requestBody.data.entity,
+		});
 
 		if (!contact) {
 			return replyJSON({
