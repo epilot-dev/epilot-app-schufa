@@ -12,14 +12,27 @@ type Gender = "MALE" | "FEMALE" | "DIVERSE" | "UNKNOWN";
 const SCHUFA_ALLOWED_CHARS =
 	/^[A-Za-z\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\-\s]+$/;
 
+// Invisible / zero-width characters that sneak in via copy-paste (e.g. from PDFs):
+// soft hyphen, zero-width space/joiners, bidi marks, word joiner, BOM.
+const INVISIBLE_CHARS = /[\u00AD\u200B-\u200F\u2060\uFEFF]/g;
+
+const stripInvisibleChars = (val: unknown) =>
+	typeof val === "string" ? val.replace(INVISIBLE_CHARS, "") : val;
+
+/** Removes invisible characters before running the given string schema. */
+const cleanString = <T extends z.ZodType>(schema: T) =>
+	z.preprocess(stripInvisibleChars, schema);
+
 const AddressSchema = z.object({
-	streetWithNumber: z
-		.string()
-		.min(1)
-		.regex(SCHUFA_ALLOWED_CHARS, {
-			message: "Invalid characters in streetWithNumber",
-		})
-		.transform((val) => val.trim().slice(0, 46)),
+	streetWithNumber: cleanString(
+		z
+			.string()
+			.min(1)
+			.regex(SCHUFA_ALLOWED_CHARS, {
+				message: "Invalid characters in streetWithNumber",
+			})
+			.transform((val) => val.trim().slice(0, 46)),
+	),
 	postalCode: z.coerce
 		.string()
 		.transform((val) => val.trim())
@@ -28,25 +41,35 @@ const AddressSchema = z.object({
 				.string()
 				.length(5, { message: "Die PLZ muss genau 5 Zeichen lang sein" }),
 		),
-	city: z
-		.string()
-		.min(1)
-		.regex(SCHUFA_ALLOWED_CHARS, { message: "Invalid characters in city" })
-		.transform((val) => val.trim().slice(0, 44)),
+	city: cleanString(
+		z
+			.string()
+			.min(1)
+			.regex(SCHUFA_ALLOWED_CHARS, { message: "Invalid characters in city" })
+			.transform((val) => val.trim().slice(0, 44)),
+	),
 	country: z.literal("DEU").optional(),
 });
 
 const PersonData = z.object({
-	firstName: z
-		.string()
-		.min(1)
-		.regex(SCHUFA_ALLOWED_CHARS, { message: "Invalid characters in firstName" })
-		.transform((val) => val.trim().slice(0, 44)),
-	lastName: z
-		.string()
-		.min(1)
-		.regex(SCHUFA_ALLOWED_CHARS, { message: "Invalid characters in lastName" })
-		.transform((val) => val.trim().slice(0, 46)),
+	firstName: cleanString(
+		z
+			.string()
+			.min(1)
+			.regex(SCHUFA_ALLOWED_CHARS, {
+				message: "Invalid characters in firstName",
+			})
+			.transform((val) => val.trim().slice(0, 44)),
+	),
+	lastName: cleanString(
+		z
+			.string()
+			.min(1)
+			.regex(SCHUFA_ALLOWED_CHARS, {
+				message: "Invalid characters in lastName",
+			})
+			.transform((val) => val.trim().slice(0, 46)),
+	),
 	gender: z.enum(["MALE", "FEMALE", "DIVERSE", "UNKNOWN"]).default("UNKNOWN"),
 	dateOfBirth: z
 		.any()
@@ -69,22 +92,20 @@ const PersonData = z.object({
 			return val;
 		})
 		.optional(),
-	title: z
-		.union([
+	title: cleanString(
+		z.union([
 			z.literal(""),
 			z
 				.string()
 				.max(30)
 				.regex(SCHUFA_ALLOWED_CHARS, { error: "Invalid characters" }),
-		])
-		.optional(),
-	placeOfBirth: z
-		.string()
-		.max(24)
-		.regex(SCHUFA_ALLOWED_CHARS, {
+		]),
+	).optional(),
+	placeOfBirth: cleanString(
+		z.string().max(24).regex(SCHUFA_ALLOWED_CHARS, {
 			message: "Invalid characters in placeOfBirth",
-		})
-		.optional(),
+		}),
+	).optional(),
 	addresses: z.object({
 		currentAddress: AddressSchema,
 		previousAddress: AddressSchema.optional(),

@@ -484,6 +484,58 @@ describe("mapToPersonalDataOrThrow", () => {
 			});
 		});
 
+		it("Scenario 3b: Invisible characters (soft hyphen, zero-width space) are stripped", () => {
+			// given
+			const contact = {
+				salutation: "Mr.",
+				first_name: "Hans\u00AD Joachim", // soft hyphen after "Hans"
+				last_name: "Schnitt\u200Bstellentest", // zero-width space
+				birthdate: "1977-07-07",
+				address: [
+					{
+						_id: "VOOLvhqcPk3Cs61ryi3P0",
+						_tags: [],
+						street: "Christian-Ritter-von-Langheinrich-Stra\u00ADße",
+						zip: "",
+						city: "Bay\uFEFFreuth",
+						country: null,
+						postal_code: "95448",
+						street_number: "10",
+					},
+				],
+				_schema: "contact",
+				_id: "b88aa1f6-e055-4a0e-9ba7-2396931db685",
+				_org: "739224",
+				_owners: [{ org_id: "739224", user_id: "unknown" }],
+				_created_at: "2025-06-26T17:48:50.494Z",
+				_updated_at: "2025-06-26T19:01:22.328Z",
+				_title: "Hans Joachim Schnittstellentest",
+			};
+
+			// when
+			const result = mapToPersonalDataOrThrow(contact);
+
+			// then
+			expect(result.error).toBeUndefined();
+			expect(result.data).toEqual({
+				addresses: {
+					currentAddress: {
+						city: "Bayreuth",
+						country: undefined,
+						postalCode: "95448",
+						streetWithNumber: "Christian-Ritter-von-Langheinrich-Straße 10",
+					},
+					previousAddress: undefined,
+				},
+				dateOfBirth: "1977-07-07",
+				firstName: "Hans Joachim",
+				gender: "MALE",
+				lastName: "Schnittstellentest",
+				placeOfBirth: undefined,
+				title: undefined,
+			});
+		});
+
 		it("Scenario 4: Invalid birthday falls back to being ignored", () => {
 			// given
 			const contact = {
