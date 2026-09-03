@@ -111,11 +111,36 @@ declare namespace Components {
              */
             error_output?: {
                 /**
+                 * Machine readable error code (automation ErrorCode)
+                 * example:
+                 * MAPPING_ERROR
+                 */
+                error_code?: string;
+                /**
                  * The reason for the error
                  * example:
                  * Invalid client id
                  */
                 error_reason?: string;
+                /**
+                 * Additional details shown in the automation UI
+                 */
+                error_info?: {
+                    details?: {
+                        /**
+                         * Field label
+                         * example:
+                         * Vorname
+                         */
+                        explanation?: string;
+                        /**
+                         * What is wrong with the field
+                         * example:
+                         * enthält unzulässige Zeichen: „@“
+                         */
+                        context?: string;
+                    }[];
+                };
             };
         }
     }

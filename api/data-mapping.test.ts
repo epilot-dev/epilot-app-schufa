@@ -1,4 +1,7 @@
-import { mapToPersonalDataOrThrow } from "./data-mapping";
+import {
+	formatValidationError,
+	mapToPersonalDataOrThrow,
+} from "./data-mapping";
 import { VisibleError } from "./errors";
 
 const mockStage = vi.fn(() => "prod");
@@ -115,13 +118,13 @@ describe("mapToPersonalDataOrThrow", () => {
 				{
 					code: "invalid_type",
 					expected: "string",
-					message: "Invalid input: expected string, received undefined",
+					message: "fehlt",
 					path: ["firstName"],
 				},
 				{
 					code: "invalid_type",
 					expected: "string",
-					message: "Invalid input: expected string, received undefined",
+					message: "fehlt",
 					path: ["lastName"],
 				},
 			]);
@@ -637,13 +640,13 @@ describe("mapToPersonalDataOrThrow", () => {
 					exact: true,
 					inclusive: true,
 					maximum: 5,
-					message: "Die PLZ muss genau 5 Zeichen lang sein",
+					message: "muss genau 5 Zeichen lang sein",
 					origin: "string",
 					path: ["addresses", "currentAddress", "postalCode"],
 				},
 				{
 					code: "invalid_value",
-					message: 'Invalid input: expected "DEU"',
+					message: "muss Deutschland (DEU) sein",
 					path: ["addresses", "currentAddress", "country"],
 					values: ["DEU"],
 				},
@@ -693,11 +696,98 @@ describe("mapToPersonalDataOrThrow", () => {
 					minimum: 5,
 					exact: true,
 					inclusive: true,
-					message: "Die PLZ muss genau 5 Zeichen lang sein",
+					message: "muss genau 5 Zeichen lang sein",
 					origin: "string",
 					path: ["addresses", "currentAddress", "postalCode"],
 				},
 			]);
 		});
+	});
+});
+
+describe("formatValidationError", () => {
+	it("builds a German summary and one detail entry per field", () => {
+		// given
+		mockStage.mockReturnValue("prod");
+		const contact = {
+			salutation: "Mr.",
+			first_name: "Hans@Joachim",
+			last_name: "",
+			address: [
+				{
+					street: "Hauptstraße",
+					street_number: "1",
+					postal_code: "123",
+					city: "Berlin",
+					country: "DEU",
+				},
+				{
+					street: "Altstraße",
+					street_number: "2",
+					postal_code: "12345",
+					city: "Ham€burg",
+				},
+			],
+			_schema: "contact",
+			_id: "1",
+			_org: "org",
+			_title: "",
+			_created_at: "",
+			_updated_at: "",
+		};
+		const { error } = mapToPersonalDataOrThrow(contact);
+		if (!error) throw new Error("expected a validation error");
+
+		// when
+		const output = formatValidationError(error);
+
+		// then
+		expect(output).toEqual({
+			error_code: "MAPPING_ERROR",
+			error_reason:
+				"Die Kontaktdaten sind für die SCHUFA-Prüfung ungültig: Vorname enthält unzulässige Zeichen: „@“; Nachname fehlt; PLZ muss genau 5 Zeichen lang sein; Ort (vorherige Adresse) enthält unzulässige Zeichen: „€“. Bitte korrigiere die Daten am Kontakt.",
+			error_info: {
+				details: [
+					{
+						explanation: "Vorname",
+						context: "enthält unzulässige Zeichen: „@“",
+					},
+					{ explanation: "Nachname", context: "fehlt" },
+					{ explanation: "PLZ", context: "muss genau 5 Zeichen lang sein" },
+					{
+						explanation: "Ort (vorherige Adresse)",
+						context: "enthält unzulässige Zeichen: „€“",
+					},
+				],
+			},
+		});
+	});
+
+	it("lists every distinct invalid character only once", () => {
+		// given
+		mockStage.mockReturnValue("prod");
+		const { error } = mapToPersonalDataOrThrow({
+			first_name: "A*B*C#",
+			last_name: "Test",
+			address: [
+				{ street: "s", street_number: "1", postal_code: "12345", city: "c" },
+			],
+			_schema: "contact",
+			_id: "1",
+			_org: "org",
+			_title: "",
+			_created_at: "",
+			_updated_at: "",
+		});
+
+		if (!error) throw new Error("expected a validation error");
+
+		// when / then
+		expect(formatValidationError(error).error_info.details).toEqual([
+			{
+				explanation: "Vorname",
+				context: "enthält unzulässige Zeichen: „*“, „#“",
+			},
+		]);
 	});
 });

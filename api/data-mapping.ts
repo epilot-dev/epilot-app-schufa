@@ -9,8 +9,12 @@ import { logger, sanitizeContact } from "./utils/logger";
 
 type Gender = "MALE" | "FEMALE" | "DIVERSE" | "UNKNOWN";
 
-const SCHUFA_ALLOWED_CHARS =
-	/^[A-Za-z\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\-\s]+$/;
+// Character set accepted by SCHUFA for names and address fields.
+const SCHUFA_CHARS =
+	"A-Za-z\\dßÄÖÜäöüĄąŁłĽľŚśŠšŞşŤťŹźŽžŻżŔŕÁáÂâĂăĹĺĆćÇçČčÉéĘęËëĚěÍíÎîĎďƉđŃńŇňÓóÔôŐőŘřŮůÚúŰűÝýŢţÃÅÆÈÊÌÏÐÑÒÕØÙÛÞÀàãåæèêìïðñòõøùûþÿŒœŸƒ:/()',.\\-\\s";
+const SCHUFA_ALLOWED_CHARS = new RegExp(`^[${SCHUFA_CHARS}]+$`);
+const SCHUFA_ALLOWED_CHARS_OR_EMPTY = new RegExp(`^[${SCHUFA_CHARS}]*$`);
+const SCHUFA_DISALLOWED_CHAR = new RegExp(`[^${SCHUFA_CHARS}]`, "g");
 
 // Invisible / zero-width characters that sneak in via copy-paste (e.g. from PDFs):
 // soft hyphen, zero-width space/joiners, bidi marks, word joiner, BOM.
@@ -23,53 +27,51 @@ const stripInvisibleChars = (val: unknown) =>
 const cleanString = <T extends z.ZodType>(schema: T) =>
 	z.preprocess(stripInvisibleChars, schema);
 
-const AddressSchema = z.object({
-	streetWithNumber: cleanString(
+// Validation messages are German and deliberately do NOT contain the field
+// name – formatValidationError() prepends the human readable label.
+const MSG_MISSING = "fehlt";
+const msgMaxLength = (max: number) => `darf höchstens ${max} Zeichen lang sein`;
+const msgInvalidChars = (iss: { input?: unknown }) => {
+	const chars = [
+		...new Set(String(iss.input ?? "").match(SCHUFA_DISALLOWED_CHAR) ?? []),
+	];
+	return `enthält unzulässige Zeichen: ${chars.map((c) => `„${c}“`).join(", ")}`;
+};
+
+/** Required text field: must be present, non-empty and only use SCHUFA chars. */
+const requiredText = (maxLength: number) =>
+	cleanString(
+		z
+			.string({ error: MSG_MISSING })
+			.min(1, { error: MSG_MISSING })
+			.regex(SCHUFA_ALLOWED_CHARS, { error: msgInvalidChars })
+			.transform((val) => val.trim().slice(0, maxLength)),
+	);
+
+/** Optional text field: may be empty, but must only use SCHUFA chars. */
+const optionalText = (maxLength: number) =>
+	cleanString(
 		z
 			.string()
-			.min(1)
-			.regex(SCHUFA_ALLOWED_CHARS, {
-				message: "Invalid characters in streetWithNumber",
-			})
-			.transform((val) => val.trim().slice(0, 46)),
-	),
+			.max(maxLength, { error: msgMaxLength(maxLength) })
+			.regex(SCHUFA_ALLOWED_CHARS_OR_EMPTY, { error: msgInvalidChars }),
+	).optional();
+
+const AddressSchema = z.object({
+	streetWithNumber: requiredText(46),
 	postalCode: z.coerce
 		.string()
 		.transform((val) => val.trim())
-		.pipe(
-			z
-				.string()
-				.length(5, { message: "Die PLZ muss genau 5 Zeichen lang sein" }),
-		),
-	city: cleanString(
-		z
-			.string()
-			.min(1)
-			.regex(SCHUFA_ALLOWED_CHARS, { message: "Invalid characters in city" })
-			.transform((val) => val.trim().slice(0, 44)),
-	),
-	country: z.literal("DEU").optional(),
+		.pipe(z.string().length(5, { error: "muss genau 5 Zeichen lang sein" })),
+	city: requiredText(44),
+	country: z
+		.literal("DEU", { error: "muss Deutschland (DEU) sein" })
+		.optional(),
 });
 
 const PersonData = z.object({
-	firstName: cleanString(
-		z
-			.string()
-			.min(1)
-			.regex(SCHUFA_ALLOWED_CHARS, {
-				message: "Invalid characters in firstName",
-			})
-			.transform((val) => val.trim().slice(0, 44)),
-	),
-	lastName: cleanString(
-		z
-			.string()
-			.min(1)
-			.regex(SCHUFA_ALLOWED_CHARS, {
-				message: "Invalid characters in lastName",
-			})
-			.transform((val) => val.trim().slice(0, 46)),
-	),
+	firstName: requiredText(44),
+	lastName: requiredText(46),
 	gender: z.enum(["MALE", "FEMALE", "DIVERSE", "UNKNOWN"]).default("UNKNOWN"),
 	dateOfBirth: z
 		.any()
@@ -92,20 +94,8 @@ const PersonData = z.object({
 			return val;
 		})
 		.optional(),
-	title: cleanString(
-		z.union([
-			z.literal(""),
-			z
-				.string()
-				.max(30)
-				.regex(SCHUFA_ALLOWED_CHARS, { error: "Invalid characters" }),
-		]),
-	).optional(),
-	placeOfBirth: cleanString(
-		z.string().max(24).regex(SCHUFA_ALLOWED_CHARS, {
-			message: "Invalid characters in placeOfBirth",
-		}),
-	).optional(),
+	title: optionalText(30),
+	placeOfBirth: optionalText(24),
 	addresses: z.object({
 		currentAddress: AddressSchema,
 		previousAddress: AddressSchema.optional(),
@@ -234,3 +224,59 @@ const isGermanAddress = (country?: string) => {
 
 	return country.toUpperCase() === "DEU" || country.toUpperCase() === "DE";
 };
+
+const FIELD_LABELS: Record<string, string> = {
+	firstName: "Vorname",
+	lastName: "Nachname",
+	title: "Titel",
+	placeOfBirth: "Geburtsort",
+	dateOfBirth: "Geburtsdatum",
+	gender: "Anrede",
+	streetWithNumber: "Straße und Hausnummer",
+	postalCode: "PLZ",
+	city: "Ort",
+	country: "Land",
+};
+
+const describeIssuePath = (path: PropertyKey[]) => {
+	const field = String(path.at(-1) ?? "");
+	const label = FIELD_LABELS[field] ?? field;
+	return path.includes("previousAddress")
+		? `${label} (vorherige Adresse)`
+		: label;
+};
+
+/**
+ * Turns a zod validation error into a user-facing (German) error_output for
+ * the automation UI: a one-line summary in error_reason plus one entry per
+ * field in error_info.details.
+ */
+export function formatValidationError(error: ZodError) {
+	// only report the first problem per field – e.g. an empty string fails
+	// both the min(1) and the regex check
+	const seen = new Set<string>();
+	const problems: { field: string; message: string }[] = [];
+
+	for (const issue of error.issues) {
+		const key = issue.path.map(String).join(".");
+		if (seen.has(key)) continue;
+		seen.add(key);
+		problems.push({
+			field: describeIssuePath(issue.path),
+			message: issue.message,
+		});
+	}
+
+	const summary = problems.map((p) => `${p.field} ${p.message}`).join("; ");
+
+	return {
+		error_code: "MAPPING_ERROR",
+		error_reason: `Die Kontaktdaten sind für die SCHUFA-Prüfung ungültig: ${summary}. Bitte korrigiere die Daten am Kontakt.`,
+		error_info: {
+			details: problems.map((p) => ({
+				explanation: p.field,
+				context: p.message,
+			})),
+		},
+	};
+}

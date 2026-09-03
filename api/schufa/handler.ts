@@ -1,5 +1,5 @@
 import { verifyEpilotSignature } from "@epilot/app-sdk";
-import { isZodError } from "../data-mapping";
+import { formatValidationError, isZodError } from "../data-mapping";
 import { VisibleError } from "../errors";
 import type { OperationHandler } from "../openapi";
 import { replyJSON } from "../utils/lambda";
@@ -83,19 +83,7 @@ export const schufaCheck: OperationHandler<"schufaCheck"> = async (c) => {
 				schufa_score,
 			});
 			return replyJSON(
-				{
-					error_output: {
-						error_reason: "Failed to map personal data for SCHUFA.",
-						error_info: {
-							details: schufa_score.issues.map((i) => {
-								const property = i.path.at(-1);
-								return {
-									explanation: [property, i.message].join(": "),
-								};
-							}),
-						},
-					},
-				},
+				{ error_output: formatValidationError(schufa_score) },
 				{ statusCode: 400 },
 			);
 		}

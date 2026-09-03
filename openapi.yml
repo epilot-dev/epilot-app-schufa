@@ -146,10 +146,31 @@ components:
           type: object
           description: If this is present the action failed and the error message is given
           properties:
+            error_code:
+              type: string
+              description: Machine readable error code (automation ErrorCode)
+              example: "MAPPING_ERROR"
             error_reason:
               type: string
               description: The reason for the error
               example: "Invalid client id"
+            error_info:
+              type: object
+              description: Additional details shown in the automation UI
+              properties:
+                details:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      explanation:
+                        type: string
+                        description: Field label
+                        example: "Vorname"
+                      context:
+                        type: string
+                        description: What is wrong with the field
+                        example: "enthält unzulässige Zeichen: „@“"
         
   securitySchemes:
     accessToken:
